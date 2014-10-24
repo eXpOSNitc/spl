@@ -343,7 +343,9 @@ struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct
 {	
 	a->ptr1=b;
 	a->ptr2=c;
-	a->ptr3=d;	
+	a->ptr3=d;
+	
+	return a;
 }
 							///end tree create fns
 void getreg(struct tree *root, char reg[])
