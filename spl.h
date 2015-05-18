@@ -364,9 +364,18 @@ void getreg(struct tree *root, char reg[])
 		sprintf(reg, "PTBR");
 	else if(root->value == PTLR_REG)
 		sprintf(reg, "PTLR");
-	else if(root->value == EFR_REG)
-		sprintf(reg, "EFR");		
+	else if(root->value == EIP_REG)
+		sprintf(reg, "EIP");
+	else if(root->value == EPN_REG)
+		sprintf(reg, "EPN");
+	else if(root->value == EC_REG)
+		sprintf(reg, "EC");
+	else if(root->value == EVA_REG)
+		sprintf(reg, "EVA");
+	else if(root->value == EMA_REG)
+		sprintf(reg, "EMA");
 }
+
 void codegen(struct tree * root)
 {
 	int n;

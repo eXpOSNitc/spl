@@ -161,8 +161,24 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('R',NULL,PTLR_REG);
 				return REG;
 			}
-"EFR"			{
-				create_node('R',NULL,EFR_REG);
+"EIP"		{
+				create_node('R',NULL,EIP_REG);
+				return REG;
+			}
+"EPN"		{
+				create_node('R',NULL,EPN_REG);
+				return REG;
+			}
+"EC"		{
+				create_node('R',NULL,EC_REG);
+				return REG;
+			}
+"EVA"		{
+				create_node('R',NULL,EVA_REG);
+				return REG;
+			}
+"EMA"		{
+				create_node('R',NULL,EMA_REG);
 				return REG;
 			}
 		

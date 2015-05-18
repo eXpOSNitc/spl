@@ -40,12 +40,17 @@
 #define SP_REG		30
 #define PTBR_REG	31
 #define PTLR_REG	32
-#define EFR_REG		33
+#define EIP_REG		33
+#define EPN_REG		34
+#define EC_REG		35
+#define EVA_REG		36
+#define EMA_REG		37
+
 
 #define NO_USER_REG		8
 #define NO_SYS_REG		16
 #define NO_TEMP_REG  	4
-#define NO_SPECIAL_REG  6
+#define NO_SPECIAL_REG  10
 
 #define NUM_REGS		(NO_USER_REG + NO_SPECIAL_REG + NO_SYS_REG + NO_TEMP_REG)
 
