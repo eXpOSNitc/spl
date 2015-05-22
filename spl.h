@@ -1246,6 +1246,118 @@ void codegen(struct tree * root)
 				regcount--;
 			}			
 			break;			
+		case '4':	//Loada
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1, reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2, reg2);
+					out_linecount++;
+					fprintf(fp, "LOADA %s, %s\n", reg1, reg2);						
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "LOADA %s, %d\n", reg1, root->ptr2->value);
+				}
+				else
+				{
+					codegen(root->ptr2);
+					out_linecount++;
+					fprintf(fp, "LOADA %s, T%d\n", reg1, regcount-1);
+					regcount--;
+				}					
+			}
+			else
+			{
+				codegen(root->ptr1);			
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2, reg2);
+					out_linecount++; fprintf(fp, "LOADA T%d, %s\n", regcount-1, reg2);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "LOADA T%d, %d\n", regcount-1, root->ptr2->value);
+				}
+				else
+				{
+					codegen(root->ptr2);
+					out_linecount++; fprintf(fp, "LOADA T%d, T%d\n", regcount-2, regcount-1);
+					regcount--;
+				}
+				regcount--;
+			}			
+			break;
+		case '5':	//Storea
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1, reg1);
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2, reg2);
+					out_linecount++;
+					fprintf(fp, "STOREA %s, %s\n", reg2, reg1);						
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "STOREA %d, %s\n", root->ptr2->value, reg1 );
+				}
+				else
+				{
+					codegen(root->ptr2);
+					out_linecount++; fprintf(fp, "STOREA T%d, %s\n", regcount-1, reg1);
+					regcount--;
+				}					
+			}
+			else
+			{
+				codegen(root->ptr1);			
+				if(root->ptr2->nodetype=='R')
+				{
+					getreg(root->ptr2, reg2);
+					out_linecount++; fprintf(fp, "STOREA %s, T%d\n", reg2, regcount-1);	
+				}
+				else if(root->ptr2->nodetype=='c')
+				{
+					out_linecount++;
+					fprintf(fp, "STOREA %d, T%d\n", root->ptr2->value, regcount-1);
+				}
+				else
+				{
+					codegen(root->ptr2);
+					out_linecount++;
+					fprintf(fp, "STOREA T%d, T%d\n", regcount-1, regcount-2);
+					regcount--;
+				}
+				regcount--;
+			}			
+			break;
+		case '6':
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1, reg1);
+				out_linecount++;
+				fprintf(fp, "BACKUP %s\n", reg1);
+			} else {
+				printf("Invalid arguement to Backup\n.");
+				exit(0);
+			}
+			break;
+		case '7':
+			if(root->ptr1->nodetype=='R')
+			{
+				getreg(root->ptr1, reg1);
+				out_linecount++;
+				fprintf(fp, "RESTORE %s\n", reg1);
+			} else {
+				printf("Invalid arguement to Restore\n.");
+				exit(0);
+			}
+			break;
 		case 'I':	//Ireturn
 			out_linecount++;
 			fprintf(fp, "IRET\n");

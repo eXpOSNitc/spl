@@ -8,8 +8,8 @@ extern FILE *yyin;
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ PRINT STRING INLINE
-%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ PRINT STRING INLINE
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ PRINT STRING INLINE BACKUP RESTORE LOADA STOREA
+%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ PRINT STRING INLINE BACKUP RESTORE LOADA STOREA
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -92,6 +92,12 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 		|STORE '(' expr ',' expr ')'	';'	{
 								$$=create_tree($1,$3,$5,NULL);
 							}
+		|LOADA '(' expr ',' expr ')' ';'		{
+								$$=create_tree($1,$3,$5,NULL);
+							}
+		|STOREA '(' expr ',' expr ')'	';'	{
+								$$=create_tree($1,$3,$5,NULL);
+							}
 		|IRETURN ';'				{
 								$$=$1;
 							}
@@ -132,6 +138,12 @@ stmt:		expr ASSIGNOP expr ';'	 		{
 		|PRINT expr ';'				{
 								$$=create_tree($1,$2,NULL,NULL);
 							}
+		|BACKUP '(' REG ')' ';' {
+			$$ = create_tree($1, $3, NULL, NULL);
+		}
+		|RESTORE '(' REG ')' ';' {
+			$$ = create_tree($1, $3, NULL, NULL);
+		}
 		;
 	
 				

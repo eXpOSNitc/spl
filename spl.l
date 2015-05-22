@@ -23,6 +23,7 @@ struct tree
 					h-halt		C-checkpoint	I-ireturn		
 					1-read	2-print	s-STRING 
 					3-inline
+					4-loada 5-storea
 						*/
 	char *name;
 	int value;
@@ -69,17 +70,36 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return IRETURN;
 			}
 
-"load"			{
+"loada"		{
+				create_node('4',NULL,-1);
+				return LOADA;
+			}
+			
+
+"storea"	{
+				create_node('5',NULL,-1);
+				return STOREA;
+			}
+"backup"	{
+				create_node('6',NULL,-1);
+				return BACKUP;
+			}
+"restore"	{
+				create_node('7',NULL,-1);
+				return RESTORE;
+			}
+
+"load"		{
 				create_node('L',NULL,-1);
 				return LOAD;
 			}
 			
 
-"store"			{
+"store"		{
 				create_node('S',NULL,-1);
 				return STORE;
 			}
-				
+
 "then"			{
 				return THEN;
 			}
