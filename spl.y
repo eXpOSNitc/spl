@@ -12,10 +12,10 @@ extern FILE *yyin;
 %type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT
 %left LOGOP
 %left RELOP  
-%left ARITHOP1        // + and -
-%left ARITHOP2        // * , / and %
+%left ARITHOP1      // + and -
+%left ARITHOP2      // * , / and %
 %right NOTOP        // NOT Operator
-%left UMIN        // unary minus
+%left UMIN          // unary minus
 %%
 body:   definelistpad stmtlist  {
                                     codegen($2);
@@ -37,7 +37,7 @@ definestmt:     DEFINE ID NUM ';'               {
                                                     insert_constant($2->name,$3->value);
                                                 }
                 |DEFINE ID ARITHOP1 NUM ';'     {
-                                                    if($3->nodetype=='-')
+                                                    if($3->nodetype==NODE_SUB)
                                                         insert_constant($2->name,-1*$4->value);
                                                     else
                                                         insert_constant($2->name,$4->value);
@@ -53,7 +53,7 @@ stmtlist:       stmtlist stmt                   {
                 ;
 
 stmt:           expr ASSIGNOP expr ';'          {
-                                                    if($1->nodetype=='R' || $1->nodetype=='m')
+                                                    if($1->nodetype==NODE_REG || $1->nodetype==NODE_ADDR_EXPR)
                                                     {
                                                         $2->value=2;
                                                         $$=create_tree($2,$1,$3,NULL);
@@ -129,7 +129,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$=$1;
                                             }
                 |READI ids ';'              {    
-                                                if($2->nodetype!='R')
+                                                if($2->nodetype!=NODE_REG)
                                                 {
                                                     printf("\n%d:Invalid operand in read!!\n",linecount);
                                                     exit(0);
@@ -146,7 +146,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$ = create_tree($1, $3, NULL, NULL);
                                             }
                 |ENCRYPT ids ';'            {    
-                                                if($2->nodetype!='R')
+                                                if($2->nodetype!=NODE_REG)
                                                 {
                                                     printf("\n%d:Invalid operand in read!!\n",linecount);
                                                     exit(0);
@@ -169,7 +169,7 @@ expr:           expr ARITHOP1 expr          {
                                                 $$=create_tree($2,$1,$3,NULL);
                                             }
                 |ARITHOP1 NUM   %prec UMIN  {
-                                                if($1->nodetype=='-')
+                                                if($1->nodetype==NODE_SUB)
                                                     $2->value=$2->value*-1;
                                                 $$=$2;
                                             }
@@ -178,7 +178,7 @@ expr:           expr ARITHOP1 expr          {
                                             }
                 |'['expr']'                 {
                                                 $$=create_nonterm_node("addr",$2,NULL);
-                                                $$->nodetype='m';
+                                                $$->nodetype=NODE_ADDR_EXPR;
                                             }                    
                 |'('expr')'                 {
                                                 $$=$2;

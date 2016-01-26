@@ -1,44 +1,15 @@
 %{
 #include "y.tab.h"
 #include "data.h"
+#include "node.h"
 int linecount=1;
-struct define
-{
-    char *name;
-    int value;
-    struct define *next;
-};
-struct tree
-{
-    char nodetype;        /*    +,-,*,/,%,=,<,>
-                    ?-if statement,        I-ireturn,    L-load
-                    S-store,    P-strcmp,    Y-strcpy,    w-while,
-                    R-register  //value=0-15,  20-BP,  21-SP,  22-IP, 23-PTBR, 24-PTLR, 25-EFR
-                    e-double equals,    l-lessthan or equals
-                    g-greaterthan or equals        !-not equal
-                    a-AND        o-OR        x-NOT
-                    c-number,    i-identifier,
-                    n-nonterminal
-                    b-break        t-continue    m-addresing expr
-                    h-halt        C-checkpoint    I-ireturn        
-                    1-read    2-print    s-STRING 
-                    3-inline E-encrypt
-                    4-loadi 6-readi
-                        */
-    char *name;
-    int value;
-    struct define *entry;
-    struct tree *ptr1,*ptr2,*ptr3;
-};
 
-void create_node(char, char*, int);    //nodetype,name,value
 %}
 
 %%
 
 
 "alias"     {
-                create_node('1',NULL,-1);
                 return ALIAS;
             }
 
@@ -47,87 +18,87 @@ void create_node(char, char*, int);    //nodetype,name,value
             }
 
 "encrypt"   {
-                create_node('E',NULL,-1);
+                create_node(NODE_ENCRYPT,NULL,-1);
                 return ENCRYPT;
             }
 
 "breakpoint" {
-                create_node('C',NULL,-1);
+                create_node(NODE_BREAKPOINT,NULL,-1);
                 return CHKPT;
             }
 
 "inline"    {
-                create_node('3',NULL,-1);
+                create_node(NODE_INLINE,NULL,-1);
                 return INLINE;
             }
 
 "halt"      {
-                create_node('h',NULL,-1);
+                create_node(NODE_HALT,NULL,-1);
                 return HALT;
             }
 
 "goto"      {
-                create_node('h',NULL,-1);//TODO
+                create_node(NODE_GOTO,NULL,-1);
                 return GOTO;
             }
 
 "call"      {
-                create_node('h',NULL,-1);//TODO
+                create_node(NODE_CALL,NULL,-1);
                 return CALL;
             }
 
 "return"    {
-                create_node('I',NULL,-1);//TODO
+                create_node(NODE_RETURN,NULL,-1);
                 return RETURN;
             }            
 
 "ireturn"   {
-                create_node('I',NULL,-1);
+                create_node(NODE_IRETURN,NULL,-1);
                 return IRETURN;
             }
 
 "backup"    {
-                create_node('6',NULL,-1);
+                create_node(NODE_BACKUP,NULL,-1);
                 return BACKUP;
             }
 
 "restore"   {
-                create_node('7',NULL,-1);
+                create_node(NODE_RESTORE,NULL,-1);
                 return RESTORE;
             }
 
 "read"      {    
-                create_node('1',NULL,-1);
+                create_node(NODE_READ,NULL,-1);
                 return READ;
             }
 
 "readi"     {    
-                create_node('6',NULL,-1);
+                create_node(NODE_READI,NULL,-1);
                 return READI;
             }
 
 "print"     {
-                create_node('2',NULL,-1);
+                create_node(NODE_PRINT,NULL,-1);
                 return PRINT;
             }
 
 "load"      {
-                create_node('L',NULL,-1);
+                create_node(NODE_LOAD,NULL,-1);
                 return LOAD;
             }
             
 "loadi"     {
-                create_node('4',NULL,-1);
+                create_node(NODE_LOADI,NULL,-1);
                 return LOADI;
             }
 
 "store"     {
-                create_node('S',NULL,-1);
+                create_node(NODE_STORE,NULL,-1);
                 return STORE;
             }
 
 "while"     {
-                create_node('w',NULL,-1);
+                create_node(NODE_WHILE,NULL,-1);
                 return WHILE;
             }
 
@@ -140,17 +111,17 @@ void create_node(char, char*, int);    //nodetype,name,value
             }
 
 "break"     {
-                create_node('b',NULL,-1);
+                create_node(NODE_BREAK,NULL,-1);
                 return BREAK;
             }    
 
 "continue"  {
-                create_node('t',NULL,-1);
+                create_node(NODE_CONTINUE,NULL,-1);
                 return CONTINUE;
             }            
                             
 "if"        {
-                create_node('?',NULL,-1);
+                create_node(NODE_IF,NULL,-1);
                 return IF;
             }    
 
@@ -167,133 +138,153 @@ void create_node(char, char*, int);    //nodetype,name,value
             }
             
 [R]([0-9])  {
-                create_node('R',NULL,atoi(yytext+1) + R0);
+                create_node(NODE_REG,NULL,atoi(yytext+1) + R0);
                 return REG;
             }    
 
 (R1)([0-5]) {
-                create_node('R',NULL,atoi(yytext+1) + R0);
+                create_node(NODE_REG,NULL,atoi(yytext+1) + R0);
                 return REG;
             }
             
 [P]([0-3])  {
-                create_node('R',NULL,atoi(yytext+1) + P0);
+                create_node(NODE_PORT,NULL,atoi(yytext+1) + P0);
                 return REG;
             }        
 
 "BP"        {
-                create_node('R',NULL,BP_REG);
+                create_node(NODE_REG,NULL,BP_REG);
                 return REG;
             }
 
 "SP"        {
-                create_node('R',NULL,SP_REG);
+                create_node(NODE_REG,NULL,SP_REG);
                 return REG;
             }
 
 "IP"        {
-                create_node('R',NULL,IP_REG);
+                create_node(NODE_REG,NULL,IP_REG);
                 return REG;
             }
 
 "PTBR"      {
-                create_node('R',NULL,PTBR_REG);
+                create_node(NODE_REG,NULL,PTBR_REG);
                 return REG;
             }
 
 "PTLR"      {
-                create_node('R',NULL,PTLR_REG);
+                create_node(NODE_REG,NULL,PTLR_REG);
                 return REG;
             }
 
 "EIP"       {
-                create_node('R',NULL,EIP_REG);
+                create_node(NODE_REG,NULL,EIP_REG);
                 return REG;
             }
 
 "EC"        {
-                create_node('R',NULL,EC_REG);
+                create_node(NODE_REG,NULL,EC_REG);
                 return REG;
             }
             
 "EPN"       {
-                create_node('R',NULL,EPN_REG);
+                create_node(NODE_REG,NULL,EPN_REG);
                 return REG;
             }
 
 "EMA"       {
-                create_node('R',NULL,EMA_REG);
+                create_node(NODE_REG,NULL,EMA_REG);
                 return REG;
             }
         
 (==)        {
-                create_node('e',NULL,-1);
+                create_node(NODE_EQ,NULL,-1);
                 return RELOP;
             }
             
 (<=)        {
-                create_node('l',NULL,-1);
+                create_node(NODE_LE,NULL,-1);
                 return RELOP;
             }
             
 (>=)        {
-                create_node('g',NULL,-1);
+                create_node(NODE_GE,NULL,-1);
                 return RELOP;
             }
             
 "!="        {
-                create_node('!',NULL,-1);
+                create_node(NODE_NE,NULL,-1);
                 return RELOP;
             }
 
             
 "&&"        {
-                create_node('a',NULL,-1);
+                create_node(NODE_AND,NULL,-1);
                 return LOGOP;
             }
 
 "||"        {
-                create_node('o',NULL,-1);
+                create_node(NODE_OR,NULL,-1);
                 return LOGOP;
             }
             
-"!"         {
-                create_node('x',NULL,-1);
+[!]         {
+                create_node(NODE_NOT,NULL,-1);
                 return NOTOP;
             }
 
-[+-]        {
-                create_node(*yytext,NULL,-1);
+[+]         {
+                create_node(NODE_ADD,NULL,-1);
                 return ARITHOP1;            
             }
             
-[*/%]       {
-                create_node(*yytext,NULL,-1);
+[-]         {
+                create_node(NODE_SUB,NULL,-1);
+                return ARITHOP1;            
+            }
+            
+[*]         {
+                create_node(NODE_MUL,NULL,-1);
                 return ARITHOP2;            
             }
             
-[<>]        {
-                create_node(*yytext,NULL,-1);
-                return RELOP;
+[/]         {
+                create_node(NODE_DIV,NULL,-1);
+                return ARITHOP2;            
+            }
+            
+[%]         {
+                create_node(NODE_MOD,NULL,-1);
+                return ARITHOP2;            
+            }
+            
+[<]         {
+                create_node(NODE_LT,NULL,-1);
+                return RELOP;            
+            }
+            
+[>]         {
+                create_node(NODE_GT,NULL,-1);
+                return RELOP;            
             }
 
-"="         {
-                create_node('=',NULL,-1);
+[=]         {
+                create_node(NODE_ASSIGN,NULL,-1);
                 return ASSIGNOP;
             }
                         
 [0-9]+      {
-                create_node('c',NULL,atoi(yytext));
+                create_node(NODE_NUM,NULL,atoi(yytext));
                 return NUM;
             }
 
 [\"][^\"]*[\"]        {    
-                create_node('s',yytext,-1);
+                create_node(NODE_STRING,yytext,-1);
                 return STRING;
             }
                     
 [a-zA-Z][a-zA-Z0-9_]*    {
-                create_node('i',yytext,-1);
+                create_node(NODE_IDENT,yytext,-1);
                 return ID;
             }    
 
@@ -316,6 +307,7 @@ void create_node(char, char*, int);    //nodetype,name,value
             }
 
 %%
+
 void create_node(char nodetype, char *name, int value)
 {    
     yylval.n=malloc(sizeof(struct tree));
