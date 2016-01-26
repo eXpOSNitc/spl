@@ -1,7 +1,7 @@
-alias i S0;
-alias j S1;
-alias n S2;
-read n;
+alias i R0;
+alias j R1;
+alias n R2;
+readi n;
 i = 2;
 while( i <= n) do
 	j = 2;
