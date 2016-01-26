@@ -37,49 +37,49 @@ void create_node(char, char*, int);	//nodetype,name,value
 %%
 
 
-"alias"			{				
+"alias"		{				
 				return ALIAS;
 			}
 
-"define"		{
+"define"	{
 				return DEFINE;
 			}
 
-"encrypt"		{
+"encrypt"	{
 				return ENCRYPT;//TODO
 			}
 
-"breakpoint"		{
+"breakpoint" {
 				create_node('C',NULL,-1);
 				return CHKPT;
 			}
 
-"inline"		{
+"inline"	{
 				create_node('3',NULL,-1);
 				return INLINE;
 			}
 
-"halt"			{
+"halt"		{
 				create_node('h',NULL,-1);
 				return HALT;
 			}
 
-"goto"			{
+"goto"		{
 				create_node('h',NULL,-1);//todo
 				return GOTO;
 			}
 
-"call"			{
+"call"		{
 				create_node('h',NULL,-1);//todo
 				return CALL;
 			}
 
-"return"		{
+"return"	{
 				create_node('I',NULL,-1);//todo
 				return RETURN;
 			}			
 
-"ireturn"		{
+"ireturn"	{
 				create_node('I',NULL,-1);
 				return IRETURN;
 			}
@@ -94,17 +94,17 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return RESTORE;
 			}
 
-"read"			{	
+"read"		{	
 				create_node('1',NULL,-1);
 				return READ;
 			}
 
-"reada"			{	
+"reada"		{	
 				create_node('1',NULL,-1);//todo
 				return READA;
 			}
 
-"print"			{
+"print"		{
 				create_node('2',NULL,-1);
 				return PRINT;
 			}
@@ -129,81 +129,82 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return STOREA;
 			}
 
-"while"			{
+"while"		{
 				create_node('w',NULL,-1);
 				return WHILE;
 			}
 
-"do"			{
+"do"		{
 				return DO;
 			}
 	
-"endwhile"		{
+"endwhile"	{
 				return ENDWHILE;
 			}
 
-"break"			{
+"break"		{
 				create_node('b',NULL,-1);
 				return BREAK;
 			}	
 
-"continue"		{
+"continue"	{
 				create_node('t',NULL,-1);
 				return CONTINUE;
 			}			
 							
-"if"			{
+"if"		{
 				create_node('?',NULL,-1);
 				return IF;
 			}	
 
-"then"			{
+"then"		{
 				return THEN;
 			}
 
-"else"			{
+"else"		{
 				return ELSE;
 			}
 
-"endif"			{
+"endif"		{
 				return ENDIF;		
 			}
 			
-[R]([0-7])  		{
+[R]([0-9])  {
+				create_node('R',NULL,atoi(yytext+1) + R0);
+				return REG;
+			}	
+
+(R1)([0-5]) {
 				create_node('R',NULL,atoi(yytext+1) + R0);
 				return REG;
 			}
-[S]([0-9])  		{
-				create_node('R',NULL,atoi(yytext+1) + S0);
-				return REG;
-			}
-(S1)([0-5])  		{
-				create_node('R',NULL,atoi(yytext+1) + S0);
-				return REG;
-			}
 			
-				
-"BP"			{
+[P]([0-3])  {
+				create_node('R',NULL,atoi(yytext+1) + P0);
+				return REG;
+			}		
+
+"BP"		{
 				create_node('R',NULL,BP_REG);
 				return REG;
 			}
 
-"SP"			{
+"SP"		{
 				create_node('R',NULL,SP_REG);
 				return REG;
 			}
 
-"IP"			{
+"IP"		{
 				create_node('R',NULL,IP_REG);
 				return REG;
 			}
 
-"PTBR"			{
+"PTBR"		{
 				create_node('R',NULL,PTBR_REG);
 				return REG;
 			}
 
-"PTLR"			{
+"PTLR"		{
 				create_node('R',NULL,PTLR_REG);
 				return REG;
 			}
@@ -213,13 +214,13 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return REG;
 			}
 
-"EPN"		{
-				create_node('R',NULL,EPN_REG);
-				return REG;
-			}
-
 "EC"		{
 				create_node('R',NULL,EC_REG);
+				return REG;
+			}
+			
+"EPN"		{
+				create_node('R',NULL,EPN_REG);
 				return REG;
 			}
 
@@ -228,33 +229,33 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return REG;
 			}
 		
-(==)			{
+(==)		{
 				create_node('e',NULL,-1);
 				return RELOP;
 			}
 			
-(<=)			{
+(<=)		{
 				create_node('l',NULL,-1);
 				return RELOP;
 			}
 			
-(>=)			{
+(>=)		{
 				create_node('g',NULL,-1);
 				return RELOP;
 			}
 			
-"!="			{
+"!="		{
 				create_node('!',NULL,-1);
 				return RELOP;
 			}
 
 			
-"&&"			{
+"&&"		{
 				create_node('a',NULL,-1);
 				return LOGOP;
 			}
 
-"||"			{
+"||"		{
 				create_node('o',NULL,-1);
 				return LOGOP;
 			}
@@ -263,17 +264,18 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('x',NULL,-1);
 				return NOTOP;
 			}
-[+-]			{
+
+[+-]		{
 				create_node(*yytext,NULL,-1);
 				return ARITHOP1;			
 			}
 			
-[*/%]			{
+[*/%]		{
 				create_node(*yytext,NULL,-1);
 				return ARITHOP2;			
 			}
 			
-[<>]			{
+[<>]		{
 				create_node(*yytext,NULL,-1);
 				return RELOP;
 			}
@@ -283,7 +285,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return ASSIGNOP;
 			}
 						
-[0-9]+			{
+[0-9]+		{
 				create_node('c',NULL,atoi(yytext));
 				return NUM;
 			}
@@ -298,7 +300,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return ID;
 			}	
 
-[(),;\[\]\{\}&]		{	
+[(),:;\[\]\{\}&]		{	
 				return *yytext;
 			}
 

@@ -2,18 +2,54 @@
 #include "data.h"
 #define LEGAL 0
 
-//Pre-defined constants in SPL
-#define SCRATCHPAD 	512
-#define PAGE_TABLE	1024
-#define MEM_LIST	1280
-#define FILE_TABLE	1344
-#define READY_LIST	1536
-#define FAT		2560
-#define DISK_LIST	3072
-#define EX_HANDLER	3584
-#define T_INTERRUPT	4608
-#define INTERRUPT	5632
-#define USER_PROG	12800
+#define OS_STARTUP		512
+#define EX_HANDLER		1024
+#define T_INTERRUPT		2048
+#define D_INTERRUPT		3072
+#define C_INTERRUPT		4096
+#define INTERRUPT		2048
+//Default values of Pre-defined constants in SPL(These values if and only if the values are not specified in the "constants" file)
+//TODO defualt values to be obtained from os team
+#define INODE_TABLE		512
+#define DISK_FREE_LIST		512
+#define ROOT_FILE		512
+#define USER_TABLE		512
+#define PROCESS_TABLE		512
+#define FILE_TABLE		512
+#define SEMAPHORE_TABLE		512
+#define DISK_STATUS_TABLE	512
+#define BUFFER_TABLE		512
+#define SYSTEM_STATUS_TABLE	512
+#define TERMINAL_STATUS_TABLE	512
+#define MEMORY_FREE_LIST	512
+#define EXCEPTION		512
+#define TIMER			512
+#define DISK			512
+#define CONSOLE			512
+#define INT_4			512
+#define INT_5			512
+#define INT_6			512
+#define INT_7			512
+#define INT_8			512
+#define INT_9			512
+#define INT_10			512
+#define INT_11			512
+#define INT_12			512
+#define INT_13			512
+#define INT_14			512
+#define INT_15			512
+#define INT_16			512
+#define INT_17			512
+#define INT_18			512
+#define MOD_0			512
+#define MOD_1			512
+#define MOD_2			512
+#define MOD_3			512
+#define MOD_4			512
+#define MOD_5			512
+#define MOD_6			512
+#define MOD_7			512
+#define DISK_SWAP_AREA		512
 
 #define PAGE_PER_INTERRUPT	2
 #define PAGE_SIZE 		512
@@ -246,21 +282,31 @@ void add_predefined_constants()
 {
 	struct define * temp;
 	char name[15];
-	
-	bzero(name,15);
-	strcpy(name, "SCRATCHPAD");
-	if(lookup_constant(name)==NULL)
-		insert_constant(name, SCRATCHPAD);
 		
 	bzero(name,15);
-	strcpy(name, "PAGE_TABLE");
+	strcpy(name, "INODE_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, PAGE_TABLE);
+		insert_constant(name, INODE_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "MEM_LIST");
+	strcpy(name, "DISK_FREE_LIST");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, MEM_LIST);
+		insert_constant(name, DISK_FREE_LIST);
+		
+	bzero(name,15);
+	strcpy(name, "ROOT_FILE");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, ROOT_FILE);
+		
+	bzero(name,15);
+	strcpy(name, "USER_TABLE");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, USER_TABLE);
+		
+	bzero(name,15);
+	strcpy(name, "PROCESS_TABLE");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, PROCESS_TABLE);
 		
 	bzero(name,15);
 	strcpy(name, "FILE_TABLE");
@@ -268,39 +314,174 @@ void add_predefined_constants()
 		insert_constant(name, FILE_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "READY_LIST");
+	strcpy(name, "SEMAPHORE_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, READY_LIST);
+		insert_constant(name, SEMAPHORE_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "FAT");
+	strcpy(name, "DISK_STATUS_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, FAT);
+		insert_constant(name, DISK_STATUS_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "DISK_LIST");
+	strcpy(name, "BUFFER_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, DISK_LIST);
+		insert_constant(name, BUFFER_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "EX_HANDLER");
+	strcpy(name, "SYSTEM_STATUS_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, EX_HANDLER);	
-			
-	bzero(name,15);
-	strcpy(name, "T_INTERRUPT");
-	if(lookup_constant(name)==NULL)
-		insert_constant(name, T_INTERRUPT);	
+		insert_constant(name, SYSTEM_STATUS_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "INTERRUPT");
+	strcpy(name, "TERMINAL_STATUS_TABLE");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, INTERRUPT);	
+		insert_constant(name, TERMINAL_STATUS_TABLE);
 		
 	bzero(name,15);
-	strcpy(name, "USER_PROG");
+	strcpy(name, "MEMORY_FREE_LIST");
 	if(lookup_constant(name)==NULL)
-		insert_constant(name, USER_PROG);
+		insert_constant(name, MEMORY_FREE_LIST);
+		
+	bzero(name,15);
+	strcpy(name, "EXCEPTION");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, EXCEPTION);
+		
+	bzero(name,15);
+	strcpy(name, "TIMER");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, TIMER);
+		
+	bzero(name,15);
+	strcpy(name, "DISK");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, DISK);
+		
+	bzero(name,15);
+	strcpy(name, "CONSOLE");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, CONSOLE);
+		
+	bzero(name,15);
+	strcpy(name, "INT_4");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_4);
+		
+	bzero(name,15);
+	strcpy(name, "INT_5");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_5);
+		
+	bzero(name,15);
+	strcpy(name, "INT_6");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_6);
+		
+	bzero(name,15);
+	strcpy(name, "INT_7");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_7);
+		
+	bzero(name,15);
+	strcpy(name, "INT_8");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_8);
+		
+	bzero(name,15);
+	strcpy(name, "INT_9");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_9);
+		
+	bzero(name,15);
+	strcpy(name, "INT_10");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_10);
+		
+	bzero(name,15);
+	strcpy(name, "INT_11");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_11);
+		
+	bzero(name,15);
+	strcpy(name, "INT_12");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_12);
+		
+	bzero(name,15);
+	strcpy(name, "INT_13");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_13);
+		
+	bzero(name,15);
+	strcpy(name, "INT_14");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_14);
+		
+	bzero(name,15);
+	strcpy(name, "INT_15");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_15);
+		
+	bzero(name,15);
+	strcpy(name, "INT_16");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_16);
+		
+	bzero(name,15);
+	strcpy(name, "INT_17");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_17);
+		
+	bzero(name,15);
+	strcpy(name, "INT_18");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, INT_18);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_0");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_0);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_1");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_1);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_2");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_2);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_3");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_3);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_4");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_4);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_5");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_5);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_6");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_6);
+		
+	bzero(name,15);
+	strcpy(name, "MOD_7");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, MOD_7);
+		
+	bzero(name,15);
+	strcpy(name, "DISK_SWAP_AREA");
+	if(lookup_constant(name)==NULL)
+		insert_constant(name, DISK_SWAP_AREA);
 }
 
 struct tree * substitute_id(struct tree *id)
@@ -350,10 +531,10 @@ struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct
 							///end tree create fns
 void getreg(struct tree *root, char reg[])
 {
-	if(root->value >= R0 && root->value <= R7)
+	if(root->value >= R0 && root->value <= R15)
 		sprintf(reg, "R%d", root->value - R0);
-	else if(root->value >= S0 && root->value <= S15)
-		sprintf(reg, "S%d", root->value - S0);
+	else if(root->value >= P0 && root->value <= P3)
+		sprintf(reg, "P%d", root->value - P0);
 	else if(root->value == BP_REG)
 		sprintf(reg, "BP");
 	else if(root->value == SP_REG)
@@ -370,8 +551,6 @@ void getreg(struct tree *root, char reg[])
 		sprintf(reg, "EPN");
 	else if(root->value == EC_REG)
 		sprintf(reg, "EC");
-	else if(root->value == EVA_REG)
-		sprintf(reg, "EVA");
 	else if(root->value == EMA_REG)
 		sprintf(reg, "EMA");
 }

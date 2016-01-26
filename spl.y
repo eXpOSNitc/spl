@@ -8,8 +8,8 @@ extern FILE *yyin;
 {
 	struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ PRINT STRING INLINE BACKUP RESTORE LOADA STOREA
-%type<n> IF IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ PRINT STRING INLINE BACKUP RESTORE LOADA STOREA
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READA PRINT STRING INLINE BACKUP RESTORE LOADA STOREA GOTO CALL ENCRYPT
+%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READA PRINT STRING INLINE BACKUP RESTORE LOADA STOREA GOTO CALL ENCRYPT
 %left LOGOP
 %left RELOP  
 %left ARITHOP1		// + and -
@@ -28,10 +28,9 @@ definelistpad:	definelist				{
 								add_predefined_constants();
 							}
 		;
-definelist:						{
-							}
-		|definelist definestmt			{
-							}
+		
+definelist:	definelist definestmt	
+		|			
 		;
 
 definestmt:	DEFINE ID NUM ';'			{
@@ -234,7 +233,7 @@ int main (int argc,char **argv)
 	if(strcmp(argv[1],"--os") == 0)
 	{
 		strcat(op_name,"os_startup.xsm");
-		addrBaseVal = SCRATCHPAD;
+		addrBaseVal = OS_STARTUP;
 	}
 	else if(strcmp(argv[1],"--exhandler") == 0)
 	{
@@ -280,6 +279,66 @@ int main (int argc,char **argv)
 	{
 		strcat(op_name,"int7.xsm");
 		addrBaseVal = T_INTERRUPT + 7*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=8") == 0)
+	{
+		strcat(op_name,"int8.xsm");
+		addrBaseVal = T_INTERRUPT + 8*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=9") == 0)
+	{
+		strcat(op_name,"int9.xsm");
+		addrBaseVal = T_INTERRUPT + 9*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=10") == 0)
+	{
+		strcat(op_name,"int10.xsm");
+		addrBaseVal = T_INTERRUPT + 10*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=11") == 0)
+	{
+		strcat(op_name,"int11.xsm");
+		addrBaseVal = T_INTERRUPT + 11*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=12") == 0)
+	{
+		strcat(op_name,"int12.xsm");
+		addrBaseVal = T_INTERRUPT + 12*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=13") == 0)
+	{
+		strcat(op_name,"int13.xsm");
+		addrBaseVal = T_INTERRUPT + 13*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=14") == 0)
+	{
+		strcat(op_name,"int14.xsm");
+		addrBaseVal = T_INTERRUPT + 14*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=15") == 0)
+	{
+		strcat(op_name,"int15.xsm");
+		addrBaseVal = T_INTERRUPT + 15*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=16") == 0)
+	{
+		strcat(op_name,"int16.xsm");
+		addrBaseVal = T_INTERRUPT + 16*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=17") == 0)
+	{
+		strcat(op_name,"int17.xsm");
+		addrBaseVal = T_INTERRUPT + 17*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=18") == 0)
+	{
+		strcat(op_name,"int18.xsm");
+		addrBaseVal = T_INTERRUPT + 18*PAGE_PER_INTERRUPT*PAGE_SIZE;
+	}
+	else if(strcmp(argv[1],"--int=19") == 0)
+	{
+		strcat(op_name,"int19.xsm");
+		addrBaseVal = T_INTERRUPT + 19*PAGE_PER_INTERRUPT*PAGE_SIZE;
 	}
 	else
 	{
