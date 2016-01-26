@@ -8,8 +8,8 @@ extern FILE *yyin;
 {
     struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READA PRINT STRING INLINE BACKUP RESTORE LOADA STOREA GOTO CALL ENCRYPT
-%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READA PRINT STRING INLINE BACKUP RESTORE LOADA STOREA GOTO CALL ENCRYPT
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT
+%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT
 %left LOGOP
 %left RELOP  
 %left ARITHOP1        // + and -
@@ -91,10 +91,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |STORE '(' expr ',' expr ')'    ';'     {
                                                             $$=create_tree($1,$3,$5,NULL);
                                                         }
-                |LOADA '(' expr ',' expr ')' ';'        {
-                                                            $$=create_tree($1,$3,$5,NULL);
-                                                        }
-                |STOREA '(' expr ',' expr ')'    ';'    {
+                |LOADI '(' expr ',' expr ')' ';'        {
                                                             $$=create_tree($1,$3,$5,NULL);
                                                         }
                 |IRETURN ';'                            {
@@ -128,7 +125,10 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |CHKPT ';'                  {    
                                                 $$=$1;
                                             }
-                |READ ids ';'               {    
+                |READ ';'                   {
+                                                $$=$1;
+                                            }
+                |READI ids ';'              {    
                                                 if($2->nodetype!='R')
                                                 {
                                                     printf("\n%d:Invalid operand in read!!\n",linecount);
@@ -144,6 +144,14 @@ stmt:           expr ASSIGNOP expr ';'          {
                                             }
                 |RESTORE '(' REG ')' ';'    {
                                                 $$ = create_tree($1, $3, NULL, NULL);
+                                            }
+                |ENCRYPT ids ';'            {    
+                                                if($2->nodetype!='R')
+                                                {
+                                                    printf("\n%d:Invalid operand in read!!\n",linecount);
+                                                    exit(0);
+                                                }                            
+                                                $$=create_tree($1,$2,NULL,NULL);
                                             }
                 ;
     

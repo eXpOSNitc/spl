@@ -22,8 +22,8 @@ struct tree
                     b-break        t-continue    m-addresing expr
                     h-halt        C-checkpoint    I-ireturn        
                     1-read    2-print    s-STRING 
-                    3-inline
-                    4-loada 5-storea
+                    3-inline E-encrypt
+                    4-loadi 6-readi
                         */
     char *name;
     int value;
@@ -47,7 +47,8 @@ void create_node(char, char*, int);    //nodetype,name,value
             }
 
 "encrypt"   {
-                return ENCRYPT;//TODO
+                create_node('E',NULL,-1);
+                return ENCRYPT;
             }
 
 "breakpoint" {
@@ -100,9 +101,9 @@ void create_node(char, char*, int);    //nodetype,name,value
                 return READ;
             }
 
-"reada"     {    
-                create_node('1',NULL,-1);//TODO
-                return READA;
+"readi"     {    
+                create_node('6',NULL,-1);
+                return READI;
             }
 
 "print"     {
@@ -115,19 +116,14 @@ void create_node(char, char*, int);    //nodetype,name,value
                 return LOAD;
             }
             
-"loada"     {
+"loadi"     {
                 create_node('4',NULL,-1);
-                return LOADA;
+                return LOADI;
             }
 
 "store"     {
                 create_node('S',NULL,-1);
                 return STORE;
-            }
-
-"storea"    {
-                create_node('5',NULL,-1);
-                return STOREA;
             }
 
 "while"     {

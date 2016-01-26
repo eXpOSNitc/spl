@@ -1335,7 +1335,97 @@ void codegen(struct tree * root)
             out_linecount++;
             fprintf(fp, "JMP %ld\n", root_while->pos1);
             break;
-        case 'L':    //Load
+        case '4':    //Loadi
+            if(root->ptr1->nodetype=='R')
+            {
+                getreg(root->ptr1, reg1);
+                if(root->ptr2->nodetype=='R')
+                {
+                    getreg(root->ptr2, reg2);
+                    out_linecount++;
+                    fprintf(fp, "LOADI %s, %s\n", reg1, reg2);                        
+                }
+                else if(root->ptr2->nodetype=='c')
+                {
+                    out_linecount++;
+                    fprintf(fp, "LOADI %s, %d\n", reg1, root->ptr2->value);
+                }
+                else
+                {
+                    codegen(root->ptr2);
+                    out_linecount++;
+                    fprintf(fp, "LOADI %s, R%d\n", reg1, C_REG_BASE + regcount-1);
+                    regcount--;
+                }                    
+            }
+            else
+            {
+                codegen(root->ptr1);            
+                if(root->ptr2->nodetype=='R')
+                {
+                    getreg(root->ptr2, reg2);
+                    out_linecount++; fprintf(fp, "LOADI R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                }
+                else if(root->ptr2->nodetype=='c')
+                {
+                    out_linecount++;
+                    fprintf(fp, "LOADI R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
+                }
+                else
+                {
+                    codegen(root->ptr2);
+                    out_linecount++; fprintf(fp, "LOADI R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
+                    regcount--;
+                }
+                regcount--;
+            }            
+            break;
+        /*case 'S':    //Store or store immediate(currently this feature is removed)
+            if(root->ptr1->nodetype=='R')
+            {
+                getreg(root->ptr1, reg1);
+                if(root->ptr2->nodetype=='R')
+                {
+                    getreg(root->ptr2, reg2);
+                    out_linecount++;
+                    fprintf(fp, "STOREI %s, %s\n", reg2, reg1);                        
+                }
+                else if(root->ptr2->nodetype=='c')
+                {
+                    out_linecount++;
+                    fprintf(fp, "STOREI %d, %s\n", root->ptr2->value, reg1 );
+                }
+                else
+                {
+                    codegen(root->ptr2);
+                    out_linecount++; fprintf(fp, "STOREI R%d, %s\n", C_REG_BASE + regcount-1, reg1);
+                    regcount--;
+                }                    
+            }
+            else
+            {
+                codegen(root->ptr1);            
+                if(root->ptr2->nodetype=='R')
+                {
+                    getreg(root->ptr2, reg2);
+                    out_linecount++; fprintf(fp, "STOREI %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
+                }
+                else if(root->ptr2->nodetype=='c')
+                {
+                    out_linecount++;
+                    fprintf(fp, "STOREI %d, R%d\n", root->ptr2->value, C_REG_BASE + regcount-1);
+                }
+                else
+                {
+                    codegen(root->ptr2);
+                    out_linecount++;
+                    fprintf(fp, "STOREI R%d, R%d\n", C_REG_BASE + regcount-1, C_REG_BASE + regcount-2);
+                    regcount--;
+                }
+                regcount--;
+            }            
+            break;   */        
+        case 'l':    //load or Load asynchronous(which is the default load)
             if(root->ptr1->nodetype=='R')
             {
                 getreg(root->ptr1, reg1);
@@ -1380,7 +1470,7 @@ void codegen(struct tree * root)
                 regcount--;
             }            
             break;
-        case 'S':    //Store
+        case 's':    //store or Store asnchronous (which is the default store)
             if(root->ptr1->nodetype=='R')
             {
                 getreg(root->ptr1, reg1);
@@ -1398,7 +1488,8 @@ void codegen(struct tree * root)
                 else
                 {
                     codegen(root->ptr2);
-                    out_linecount++; fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
+                    out_linecount++;
+                    fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
                     regcount--;
                 }                    
             }
@@ -1408,7 +1499,8 @@ void codegen(struct tree * root)
                 if(root->ptr2->nodetype=='R')
                 {
                     getreg(root->ptr2, reg2);
-                    out_linecount++; fprintf(fp, "STORE %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
+                    out_linecount++;
+                    fprintf(fp, "STORE %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
                 }
                 else if(root->ptr2->nodetype=='c')
                 {
@@ -1420,98 +1512,6 @@ void codegen(struct tree * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "STORE R%d, R%d\n", C_REG_BASE + regcount-1, C_REG_BASE + regcount-2);
-                    regcount--;
-                }
-                regcount--;
-            }            
-            break;            
-        case '4':    //Loada
-            if(root->ptr1->nodetype=='R')
-            {
-                getreg(root->ptr1, reg1);
-                if(root->ptr2->nodetype=='R')
-                {
-                    getreg(root->ptr2, reg2);
-                    out_linecount++;
-                    fprintf(fp, "LOADA %s, %s\n", reg1, reg2);                        
-                }
-                else if(root->ptr2->nodetype=='c')
-                {
-                    out_linecount++;
-                    fprintf(fp, "LOADA %s, %d\n", reg1, root->ptr2->value);
-                }
-                else
-                {
-                    codegen(root->ptr2);
-                    out_linecount++;
-                    fprintf(fp, "LOADA %s, R%d\n", reg1, C_REG_BASE + regcount-1);
-                    regcount--;
-                }                    
-            }
-            else
-            {
-                codegen(root->ptr1);            
-                if(root->ptr2->nodetype=='R')
-                {
-                    getreg(root->ptr2, reg2);
-                    out_linecount++; fprintf(fp, "LOADA R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
-                }
-                else if(root->ptr2->nodetype=='c')
-                {
-                    out_linecount++;
-                    fprintf(fp, "LOADA R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
-                }
-                else
-                {
-                    codegen(root->ptr2);
-                    out_linecount++; fprintf(fp, "LOADA R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
-                    regcount--;
-                }
-                regcount--;
-            }            
-            break;
-        case '5':    //Storea
-            if(root->ptr1->nodetype=='R')
-            {
-                getreg(root->ptr1, reg1);
-                if(root->ptr2->nodetype=='R')
-                {
-                    getreg(root->ptr2, reg2);
-                    out_linecount++;
-                    fprintf(fp, "STOREA %s, %s\n", reg2, reg1);                        
-                }
-                else if(root->ptr2->nodetype=='c')
-                {
-                    out_linecount++;
-                    fprintf(fp, "STOREA %d, %s\n", root->ptr2->value, reg1 );
-                }
-                else
-                {
-                    codegen(root->ptr2);
-                    out_linecount++;
-                    fprintf(fp, "STOREA R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                    regcount--;
-                }                    
-            }
-            else
-            {
-                codegen(root->ptr1);            
-                if(root->ptr2->nodetype=='R')
-                {
-                    getreg(root->ptr2, reg2);
-                    out_linecount++;
-                    fprintf(fp, "STOREA %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
-                }
-                else if(root->ptr2->nodetype=='c')
-                {
-                    out_linecount++;
-                    fprintf(fp, "STOREA %d, R%d\n", root->ptr2->value, C_REG_BASE + regcount-1);
-                }
-                else
-                {
-                    codegen(root->ptr2);
-                    out_linecount++;
-                    fprintf(fp, "STOREA R%d, R%d\n", C_REG_BASE + regcount-1, C_REG_BASE + regcount-2);
                     regcount--;
                 }
                 regcount--;
@@ -1557,7 +1557,7 @@ void codegen(struct tree * root)
             out_linecount++;
             fprintf(fp, "BRKP\n");
             break;
-        case '1':    //read
+        case '6':    //readi
             getreg(root->ptr1, reg1);
             out_linecount++;
             fprintf(fp, "IN %s\n", reg1);
