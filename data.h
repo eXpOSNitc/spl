@@ -47,4 +47,5 @@
 
 #define NUM_REGS		(NO_GEN_REG + NO_SPECIAL_REG + NO_PORTS)
 
+#define C_REG_BASE	(R16) //Base address of registers reserved for compiler only use
 #endif
