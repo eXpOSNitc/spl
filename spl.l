@@ -36,6 +36,7 @@ void create_node(char, char*, int);	//nodetype,name,value
 
 %%
 
+
 "alias"			{				
 				return ALIAS;
 			}
@@ -44,49 +45,68 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return DEFINE;
 			}
 
-"do"			{
-				return DO;
-			}
-							
-"else"			{
-				return ELSE;
+"encrypt"		{
+				return ENCRYPT;//TODO
 			}
 
-"endif"			{
-				return ENDIF;		
+"breakpoint"		{
+				create_node('C',NULL,-1);
+				return CHKPT;
 			}
-	
-"endwhile"		{
-				return ENDWHILE;
+
+"inline"		{
+				create_node('3',NULL,-1);
+				return INLINE;
 			}
-							
-"if"			{
-				create_node('?',NULL,-1);
-				return IF;
-			}	
-						
+
+"halt"			{
+				create_node('h',NULL,-1);
+				return HALT;
+			}
+
+"goto"			{
+				create_node('h',NULL,-1);//todo
+				return GOTO;
+			}
+
+"call"			{
+				create_node('h',NULL,-1);//todo
+				return CALL;
+			}
+
+"return"		{
+				create_node('I',NULL,-1);//todo
+				return RETURN;
+			}			
+
 "ireturn"		{
 				create_node('I',NULL,-1);
 				return IRETURN;
 			}
 
-"loada"		{
-				create_node('4',NULL,-1);
-				return LOADA;
-			}
-			
-
-"storea"	{
-				create_node('5',NULL,-1);
-				return STOREA;
-			}
 "backup"	{
 				create_node('6',NULL,-1);
 				return BACKUP;
 			}
+
 "restore"	{
 				create_node('7',NULL,-1);
 				return RESTORE;
+			}
+
+"read"			{	
+				create_node('1',NULL,-1);
+				return READ;
+			}
+
+"reada"			{	
+				create_node('1',NULL,-1);//todo
+				return READA;
+			}
+
+"print"			{
+				create_node('2',NULL,-1);
+				return PRINT;
 			}
 
 "load"		{
@@ -94,19 +114,32 @@ void create_node(char, char*, int);	//nodetype,name,value
 				return LOAD;
 			}
 			
+"loada"		{
+				create_node('4',NULL,-1);
+				return LOADA;
+			}
 
 "store"		{
 				create_node('S',NULL,-1);
 				return STORE;
 			}
 
-"then"			{
-				return THEN;
+"storea"	{
+				create_node('5',NULL,-1);
+				return STOREA;
 			}
 
 "while"			{
 				create_node('w',NULL,-1);
 				return WHILE;
+			}
+
+"do"			{
+				return DO;
+			}
+	
+"endwhile"		{
+				return ENDWHILE;
 			}
 
 "break"			{
@@ -118,30 +151,22 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('t',NULL,-1);
 				return CONTINUE;
 			}			
+							
+"if"			{
+				create_node('?',NULL,-1);
+				return IF;
+			}	
 
-"halt"			{
-				create_node('h',NULL,-1);
-				return HALT;
-			}
-
-"breakpoint"		{
-				create_node('C',NULL,-1);
-				return CHKPT;
-			}
-			
-"read"			{	
-				create_node('1',NULL,-1);
-				return READ;
-			}
-			
-"print"			{
-				create_node('2',NULL,-1);
-				return PRINT;
+"then"			{
+				return THEN;
 			}
 
-"inline"		{
-				create_node('3',NULL,-1);
-				return INLINE;
+"else"			{
+				return ELSE;
+			}
+
+"endif"			{
+				return ENDIF;		
 			}
 			
 [R]([0-7])  		{
@@ -177,26 +202,27 @@ void create_node(char, char*, int);	//nodetype,name,value
 				create_node('R',NULL,PTBR_REG);
 				return REG;
 			}
+
 "PTLR"			{
 				create_node('R',NULL,PTLR_REG);
 				return REG;
 			}
+
 "EIP"		{
 				create_node('R',NULL,EIP_REG);
 				return REG;
 			}
+
 "EPN"		{
 				create_node('R',NULL,EPN_REG);
 				return REG;
 			}
+
 "EC"		{
 				create_node('R',NULL,EC_REG);
 				return REG;
 			}
-"EVA"		{
-				create_node('R',NULL,EVA_REG);
-				return REG;
-			}
+
 "EMA"		{
 				create_node('R',NULL,EMA_REG);
 				return REG;
