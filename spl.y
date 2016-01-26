@@ -46,6 +46,7 @@ definestmt:     DEFINE ID NUM ';'               {
 
 stmtlist:       stmtlist stmt                   {
                                                     $$=create_nonterm_node("Body",$1,$2);
+                                                    $$->nodetype=NODE_STMTLIST;
                                                 }
                 |stmt                           {
                                                     $$=$1;

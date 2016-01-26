@@ -1550,7 +1550,7 @@ void codegen(struct tree * root)
             fprintf(fp, "%s\n",root->ptr1->name);
             break;
         default:
-            printf("Unknown Command %d\n", root->nodetype);        //Debugging
+            printf("Unknown Command %d %s\n", root->nodetype, root->name);        //Debugging
             return;
     }
 }
