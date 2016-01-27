@@ -1120,6 +1120,12 @@ void codegen(struct tree * root)
                         out_linecount++;
                         fprintf(fp, "MOV [%d], %s\n", root->ptr1->ptr1->value, root->ptr2->name);
                     }
+                    else if(root->ptr2->nodetype==NODE_PORT)        //[no]=port
+                    {
+                        getreg(root->ptr2, reg2);
+                        out_linecount++;
+                        fprintf(fp, "PORT R%d, %s\nMOV [%d], R%d\n", C_REG_BASE + regcount, reg2, root->ptr1->ptr1->value, C_REG_BASE + regcount);    
+                    }
                     else                    //[no]=expr
                     {
                         codegen(root->ptr2);
@@ -1147,6 +1153,12 @@ void codegen(struct tree * root)
                         out_linecount++;
                         fprintf(fp, "MOV [%s], %s\n", reg1, root->ptr2->name);
                     }
+                    else if(root->ptr2->nodetype==NODE_PORT)        //[reg]=port
+                    {
+                        getreg(root->ptr2, reg2);
+                        out_linecount++;
+                        fprintf(fp, "PORT R%d, %s\nMOV [%s], R%d\n", C_REG_BASE+ regcount, reg2, reg1, C_REG_BASE+regcount);    
+                    }
                     else                    //[reg]=expr
                     {
                         codegen(root->ptr2);
@@ -1173,6 +1185,12 @@ void codegen(struct tree * root)
                     {
                         out_linecount++;
                         fprintf(fp, "MOV [R%d], %s\n", C_REG_BASE + regcount-1, root->ptr2->name);
+                    }
+                    else if(root->ptr2->nodetype==NODE_PORT)        //[expr]=port
+                    {
+                        getreg(root->ptr2, reg2);
+                        out_linecount++;
+                        fprintf(fp, "PORT R%d, %s\nMOV [R%d], R%d\n", C_REG_BASE + regcount, reg2, C_REG_BASE + regcount-1, C_REG_BASE + regcount);    
                     }
                     else                    //[expr]=expr
                     {
@@ -1202,6 +1220,12 @@ void codegen(struct tree * root)
                 {
                     out_linecount++;
                     fprintf(fp, "MOV %s, %s\n", reg1, root->ptr2->name);
+                }
+                else if(root->ptr2->nodetype==NODE_PORT)        //reg=port
+                {
+                    getreg(root->ptr2, reg2);
+                    out_linecount++;
+                    fprintf(fp, "PORT R%d, %s\nMOV %s, R%d\n", C_REG_BASE + regcount, reg2, reg1, C_REG_BASE + regcount);    
                 }
                 else                    //reg=expr
                 {

@@ -66,7 +66,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     }
                                                 }
                 |expr ASSIGNOP PORT ';'         {
-                                                    if($1->nodetype==NODE_REG)
+                                                    if($1->nodetype==NODE_REG || $1->nodetype==NODE_ADDR_EXPR)
                                                     {
                                                         $2->value=2;
                                                         $$=create_tree($2,$1,$3,NULL);
