@@ -65,7 +65,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                         exit(0);
                                                     }
                                                 }
-                |expr ASSIGNOP PORT ';'         {//TODO
+                |expr ASSIGNOP PORT ';'         {
                                                     if($1->nodetype==NODE_REG)
                                                     {
                                                         $2->value=2;
@@ -76,19 +76,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                         printf("\n%d:Invalid operands in assignment!!\n",linecount);
                                                         exit(0);
                                                     }
-                                                 }
-                |PORT ASSIGNOP expr ';'         {//TODO
-                                                    if($2->nodetype==NODE_REG)
-                                                    {
-                                                        $2->value=2;
-                                                        $$=create_tree($2,$1,$3,NULL);
-                                                    }
-                                                    else
-                                                    {
-                                                        printf("\n%d:Invalid operands in assignment!!\n",linecount);
-                                                        exit(0);
-                                                    }
-                                                 }
+                                                }
                 |ifpad expr THEN stmtlist ENDIF ';'     {                                
                                                             $$=create_tree($1,$2,$4,NULL);
                                                             pop_alias();
@@ -154,7 +142,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$=$1;
                                             }
                 |READI ids ';'              {    
-                                                if($2->nodetype!=NODE_REG)
+                                                if($2->nodetype!=NODE_REG||!isAllowedRegister($2->value))
                                                 {
                                                     printf("\n%d:Invalid operand in read!!\n",linecount);
                                                     exit(0);

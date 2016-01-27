@@ -1495,11 +1495,11 @@ void codegen(struct tree * root)
             }            
             break;
         case NODE_BACKUP:
-             out_linecount++;
+            out_linecount++;
             fprintf(fp, "BACKUP\n");
             break;
         case NODE_RESTORE:
-             out_linecount++;
+            out_linecount++;
             fprintf(fp, "RESTORE\n");
             break;
         case NODE_IRETURN:    //Ireturn
@@ -1520,15 +1520,19 @@ void codegen(struct tree * root)
             out_linecount++;
             fprintf(fp, "BRKP\n");
             break;
+        case NODE_READ:
+            out_linecount++;
+            fprintf(fp, "IN\n");
+            break;
         case NODE_READI:    //readi
             getreg(root->ptr1, reg1);
-            out_linecount++;
-            fprintf(fp, "IN %s\n", reg1);
+            out_linecount+=2;
+            fprintf(fp, "INI\nPORT %s, P0\n", reg1);
             break;
         case NODE_PRINT:    //print
             codegen(root->ptr1);
-            out_linecount++;
-            fprintf(fp, "OUT R%d\n", C_REG_BASE + regcount-1);
+            out_linecount+=2;
+            fprintf(fp, "PORT P0, R%d\nOUT\n", C_REG_BASE + regcount-1);
             regcount--;
             break;
         case NODE_INLINE:    //INLINE

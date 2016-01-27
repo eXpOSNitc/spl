@@ -43,11 +43,11 @@
 
 #define NO_GEN_REG		20
 #define NO_PORTS		4
-#define NO_SPECIAL_REG		9
+#define NO_SPECIAL_REG	9
 
 #define NUM_REGS		(NO_GEN_REG + NO_SPECIAL_REG + NO_PORTS)
 
-#define C_REG_BASE	16 //Base address of registers reserved for compiler only use(16 because they start from R16)
+#define C_REG_BASE	    16 //Base address of registers reserved for compiler only use(16 because they start from R16)
 
 int isAllowedRegister(int value)
 {
