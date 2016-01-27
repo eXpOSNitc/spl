@@ -1,12 +1,13 @@
-all:	    spl
+all:	spl
 
 lex.yy.c:	spl.l
-		    lex spl.l
+			lex spl.l
 
 y.tab.c:	spl.y spl.h	
-		    yacc -d spl.y
-		    
-spl:		lex.yy.c y.tab.c	
-		    gcc lex.yy.c y.tab.c -ll -o spl
+			yacc -d spl.y
+		
+spl:		lex.yy.c y.tab.c
+			gcc lex.yy.c y.tab.c -ll -o spl
+
 clean:
-	        rm -rf spl *~ y.* lex.*
+	rm -rf spl *~ y.* lex.*
