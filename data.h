@@ -48,4 +48,11 @@
 #define NUM_REGS		(NO_GEN_REG + NO_SPECIAL_REG + NO_PORTS)
 
 #define C_REG_BASE	16 //Base address of registers reserved for compiler only use(16 because they start from R16)
+
+int isAllowedRegister(int value)
+{
+    if(value>=R0&&value<R0+C_REG_BASE)
+        return 1;
+    return 0;
+}
 #endif

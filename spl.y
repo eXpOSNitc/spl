@@ -8,8 +8,8 @@ extern FILE *yyin;
 {
     struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT
-%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT
+%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT
 %left LOGOP
 %left RELOP  
 %left ARITHOP1      // + and -
@@ -65,6 +65,30 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                         exit(0);
                                                     }
                                                 }
+                |expr ASSIGNOP PORT ';'         {//TODO
+                                                    if($1->nodetype==NODE_REG)
+                                                    {
+                                                        $2->value=2;
+                                                        $$=create_tree($2,$1,$3,NULL);
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("\n%d:Invalid operands in assignment!!\n",linecount);
+                                                        exit(0);
+                                                    }
+                                                 }
+                |PORT ASSIGNOP expr ';'         {//TODO
+                                                    if($2->nodetype==NODE_REG)
+                                                    {
+                                                        $2->value=2;
+                                                        $$=create_tree($2,$1,$3,NULL);
+                                                    }
+                                                    else
+                                                    {
+                                                        printf("\n%d:Invalid operands in assignment!!\n",linecount);
+                                                        exit(0);
+                                                    }
+                                                 }
                 |ifpad expr THEN stmtlist ENDIF ';'     {                                
                                                             $$=create_tree($1,$2,$4,NULL);
                                                             pop_alias();
@@ -140,16 +164,16 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |PRINT expr ';'             {
                                                 $$=create_tree($1,$2,NULL,NULL);
                                             }
-                |BACKUP '(' REG ')' ';'     {
-                                                $$ = create_tree($1, $3, NULL, NULL);
+                |BACKUP ';'     {
+                                                $$ = create_tree($1, NULL, NULL, NULL);
                                             }
-                |RESTORE '(' REG ')' ';'    {
-                                                $$ = create_tree($1, $3, NULL, NULL);
+                |RESTORE ';'    {
+                                                $$ = create_tree($1, NULL, NULL, NULL);
                                             }
                 |ENCRYPT ids ';'            {    
-                                                if($2->nodetype!=NODE_REG)
+                                                if($2->nodetype!=NODE_REG||!isAllowedRegister($2->value))
                                                 {
-                                                    printf("\n%d:Invalid operand in read!!\n",linecount);
+                                                    printf("\n%d:Invalid operand in encrypt!!\n",linecount);
                                                     exit(0);
                                                 }                            
                                                 $$=create_tree($1,$2,NULL,NULL);

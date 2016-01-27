@@ -149,7 +149,7 @@ int linecount=1;
             
 [P]([0-3])  {
                 create_node(NODE_PORT,NULL,atoi(yytext+1) + P0);
-                return REG;
+                return PORT;
             }        
 
 "BP"        {

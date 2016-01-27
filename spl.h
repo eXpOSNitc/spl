@@ -1495,26 +1495,12 @@ void codegen(struct tree * root)
             }            
             break;
         case NODE_BACKUP:
-            if(root->ptr1->nodetype==NODE_REG)
-            {
-                getreg(root->ptr1, reg1);
-                out_linecount++;
-                fprintf(fp, "BACKUP %s\n", reg1);
-            } else {
-                printf("Invalid arguement to Backup\n.");
-                exit(0);
-            }
+             out_linecount++;
+            fprintf(fp, "BACKUP\n");
             break;
         case NODE_RESTORE:
-            if(root->ptr1->nodetype==NODE_REG)
-            {
-                getreg(root->ptr1, reg1);
-                out_linecount++;
-                fprintf(fp, "RESTORE %s\n", reg1);
-            } else {
-                printf("Invalid arguement to Restore\n.");
-                exit(0);
-            }
+             out_linecount++;
+            fprintf(fp, "RESTORE\n");
             break;
         case NODE_IRETURN:    //Ireturn
             out_linecount++;
@@ -1548,6 +1534,11 @@ void codegen(struct tree * root)
         case NODE_INLINE:    //INLINE
             out_linecount++;
             fprintf(fp, "%s\n",root->ptr1->name);
+            break;
+        case NODE_ENCRYPT:    //encrypt
+            getreg(root->ptr1, reg1);
+            out_linecount++;
+            fprintf(fp, "ENCRYPT %s\n", reg1);
             break;
         default:
             printf("Unknown Command %d %s\n", root->nodetype, root->name);        //Debugging
