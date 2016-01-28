@@ -109,6 +109,9 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |LOADI '(' expr ',' expr ')' ';'        {
                                                             $$=create_tree($1,$3,$5,NULL);
                                                         }
+                |RETURN ';'                            {
+                                                            $$=$1;
+                                                        }
                 |IRETURN ';'                            {
                                                             $$=$1;
                                                         }
@@ -269,6 +272,16 @@ int main (int argc,char **argv)
     {
         strcat(op_name,"timer.xsm");
         addrBaseVal = T_INTERRUPT;
+    }
+    else if(strcmp(argv[1],"--int=disk") == 0)
+    {
+        strcat(op_name,"disk.xsm");
+        addrBaseVal = D_INTERRUPT;
+    }
+    else if(strcmp(argv[1],"--int=console") == 0)
+    {
+        strcat(op_name,"console.xsm");
+        addrBaseVal = C_INTERRUPT;
     }
     else if(strcmp(argv[1],"--int=1") == 0)
     {

@@ -1454,6 +1454,10 @@ void codegen(struct tree * root)
             out_linecount++;
             fprintf(fp, "RESTORE\n");
             break;
+        case NODE_RETURN:    //return
+            out_linecount++;
+            fprintf(fp, "RET\n");
+            break;
         case NODE_IRETURN:    //Ireturn
             out_linecount++;
             fprintf(fp, "IRET\n");
