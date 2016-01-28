@@ -1,6 +1,7 @@
 %{
 #include<stdio.h>
 #include<stdlib.h>
+#include "data.h"
 #include "spl.h"
 extern FILE *yyin;
 %}
@@ -16,6 +17,7 @@ extern FILE *yyin;
 %left ARITHOP2      // * , / and %
 %right NOTOP        // NOT Operator
 %left UMIN          // unary minus
+
 %%
 body:   definelistpad stmtlist  {
                                     codegen($2);
