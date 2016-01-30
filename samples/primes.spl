@@ -1,6 +1,7 @@
 alias i R0;
 alias j R1;
 alias n R2;
+print TIMER; //to check if the values in constant file is accessible
 readi n;
 i = 2;
 while( i <= n) do

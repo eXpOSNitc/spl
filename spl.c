@@ -185,208 +185,29 @@ void insert_constant(char *name, int value)
 }      
 void add_predefined_constants()
 {
-    struct define * temp;
     char name[15];
-        
-    bzero(name,15);
-    strcpy(name, "INODE_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INODE_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "DISK_FREE_LIST");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, DISK_FREE_LIST);
-        
-    bzero(name,15);
-    strcpy(name, "ROOT_FILE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, ROOT_FILE);
-        
-    bzero(name,15);
-    strcpy(name, "USER_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, USER_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "PROCESS_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, PROCESS_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "FILE_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, FILE_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "SEMAPHORE_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, SEMAPHORE_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "DISK_STATUS_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, DISK_STATUS_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "BUFFER_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, BUFFER_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "SYSTEM_STATUS_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, SYSTEM_STATUS_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "TERMINAL_STATUS_TABLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, TERMINAL_STATUS_TABLE);
-        
-    bzero(name,15);
-    strcpy(name, "MEMORY_FREE_LIST");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MEMORY_FREE_LIST);
-        
-    bzero(name,15);
-    strcpy(name, "EXCEPTION");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, EXCEPTION);
-        
-    bzero(name,15);
-    strcpy(name, "TIMER");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, TIMER);
-        
-    bzero(name,15);
-    strcpy(name, "DISK");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, DISK);
-        
-    bzero(name,15);
-    strcpy(name, "CONSOLE");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, CONSOLE);
-        
-    bzero(name,15);
-    strcpy(name, "INT_4");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_4);
-        
-    bzero(name,15);
-    strcpy(name, "INT_5");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_5);
-        
-    bzero(name,15);
-    strcpy(name, "INT_6");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_6);
-        
-    bzero(name,15);
-    strcpy(name, "INT_7");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_7);
-        
-    bzero(name,15);
-    strcpy(name, "INT_8");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_8);
-        
-    bzero(name,15);
-    strcpy(name, "INT_9");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_9);
-        
-    bzero(name,15);
-    strcpy(name, "INT_10");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_10);
-        
-    bzero(name,15);
-    strcpy(name, "INT_11");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_11);
-        
-    bzero(name,15);
-    strcpy(name, "INT_12");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_12);
-        
-    bzero(name,15);
-    strcpy(name, "INT_13");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_13);
-        
-    bzero(name,15);
-    strcpy(name, "INT_14");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_14);
-        
-    bzero(name,15);
-    strcpy(name, "INT_15");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_15);
-        
-    bzero(name,15);
-    strcpy(name, "INT_16");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_16);
-        
-    bzero(name,15);
-    strcpy(name, "INT_17");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_17);
-        
-    bzero(name,15);
-    strcpy(name, "INT_18");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, INT_18);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_0");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_0);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_1");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_1);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_2");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_2);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_3");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_3);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_4");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_4);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_5");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_5);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_6");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_6);
-        
-    bzero(name,15);
-    strcpy(name, "MOD_7");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, MOD_7);
-        
-    bzero(name,15);
-    strcpy(name, "DISK_SWAP_AREA");
-    if(lookup_constant(name)==NULL)
-        insert_constant(name, DISK_SWAP_AREA);
+    int value;
+    FILE *c_fp;
+    
+    c_fp = fopen("constants","r");
+    if(!c_fp)
+    {
+        printf("\nUnable to open constants file!\nExiting\n");
+        exit(0);
+    }
+    while (!feof(c_fp))
+    {
+        bzero(name,15);
+        if (fscanf(c_fp ,"%s %d",name,&value))
+        {
+            if(lookup_constant(name)==NULL)
+                insert_constant(name, INODE_TABLE);
+        }
+        else
+            break;
+    }   
+
+    fclose(c_fp);
 }
 
 struct tree * substitute_id(struct tree *id)
