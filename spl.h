@@ -95,7 +95,7 @@ void use_jmp_points(struct jmp_point *root);
 
 extern struct define *root_define;
 extern char alias_table[8][30];
-extern struct define* lookup_constant(char *name);
+struct define* lookup_constant(char *name);
 extern int depth;
 
 struct alias

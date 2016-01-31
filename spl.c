@@ -15,7 +15,6 @@ struct label *root_label=NULL, *root_while=NULL;
 
 struct define *root_define=NULL;
 char alias_table[8][30];
-struct define* lookup_constant(char *name);
 int depth=0;
 
 struct alias *root_alias=NULL;
