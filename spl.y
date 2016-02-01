@@ -177,6 +177,12 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     $$=$1;
                                                     $$->ptr1=substitute_id($2);
                                                 }
+                                                else
+                                                {
+                                                    $$=$1;
+                                                    $$->ptr1=$2;
+                                                }
+                                                $$->value=linecount;/*Hack to show line numbers in case of syntax errors*/
                                             }
                 |CALL ID ';'                {//TODO
                                                 if(lookup_constant($2->name)==NULL)/*if the address to call is a predefined value in constants file*/
@@ -184,9 +190,16 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     $$=$1;
                                                     $$->ptr1=substitute_id($2);
                                                 }
+                                                else
+                                                {
+                                                    $$=$1;
+                                                    $$->ptr1=$2;
+                                                }
+                                                $$->value=linecount;/*Hack to show line numbers in case of syntax errors*/
                                             }
-                |ID ':'                     {//TODO
-                                                $$=$1;
+                |ID ':'                     {
+                                                $$=create_nonterm_node("Label Def",$1,NULL);
+                                                $$->nodetype=NODE_LABEL_DEF;
                                             }
                 ;
     

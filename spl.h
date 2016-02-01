@@ -93,10 +93,19 @@ void use_jmp_points(struct jmp_point *root);
                         ///end labels
                         
                         ///starting named labels (for goto and call)
+                        /* This method will cause problems with the existing labels(used for if and while), as the seek positions changes. Need to combine both*/
 struct named_label
 {
     char name[30];//TODO
-    
+    int sourceLineNum;
+    int targetAddress;
+    struct named_label *next;
+};
+struct named_label_list
+{
+    struct named_label* label;
+    int seekpos;
+    struct named_label_list *next;
 };
                         ///end named labels
                         ///start constants and aliasing
@@ -124,6 +133,7 @@ void add_predefined_constants();
 struct tree * substitute_id(struct tree *id);
                             ///end of constants and alias
                             ///start tree create fns
+                            
 struct tree * create_nonterm_node(char *name, struct tree *a, struct tree *b);
 struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct tree *d);
                             ///end tree create fns
@@ -134,3 +144,4 @@ void codegen(struct tree * root);
 void expandpath(char *path); // To expand environment variables in path
 
 void remfilename(char *pathname);
+struct tree * get_namedLabel_node(struct tree* node);

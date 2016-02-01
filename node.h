@@ -47,6 +47,8 @@
 #define NODE_GOTO       42
 #define NODE_CALL       43
 #define NODE_PORT       44
+#define NODE_LABEL_DEF  45
+
 struct define
 {
     char name[30];

@@ -13,6 +13,8 @@ FILE *fp;
 int labelcount=0;
 struct label *root_label=NULL, *root_while=NULL;
 
+struct named_label_list *rootNamedLabelList=NULL;/*List of usages of named labels*/
+struct named_label *rootNamedLabel=NULL;/*List of named Labels*/
 struct define *root_define=NULL;
 char alias_table[8][30];
 int depth=0;
@@ -1345,4 +1347,9 @@ void remfilename(char *pathname)
         i--;
     }
     pathname[i+1]='\0';    
+}
+
+struct tree * get_namedLabel_node(struct tree* node)
+{
+    return NULL;   
 }
