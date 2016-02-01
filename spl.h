@@ -97,7 +97,7 @@ struct named_label
 {
     char name[30];//TODO
     
-}
+};
                         ///end named labels
                         ///start constants and aliasing
 
