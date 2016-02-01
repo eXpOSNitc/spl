@@ -91,6 +91,14 @@ void pop_while();
 void add_jmp_point(char instr[32]);
 void use_jmp_points(struct jmp_point *root);
                         ///end labels
+                        
+                        ///starting named labels (for goto and call)
+struct named_label
+{
+    char name[30];//TODO
+    
+}
+                        ///end named labels
                         ///start constants and aliasing
 
 extern struct define *root_define;

@@ -171,6 +171,23 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 }                            
                                                 $$=create_tree($1,$2,NULL,NULL);
                                             }
+                |GOTO ID ';'                {//TODO
+                                                if(lookup_constant($2)==NULL)/*if the address to jump to is a predefined value in constants file*/
+                                                {
+                                                    $$=$1;
+                                                    $$->value=substitute_id($2);
+                                                }
+                                            }
+                |CALL ID ';'                {//TODO
+                                                if(lookup_constant($2)==NULL)/*if the address to call is a predefined value in constants file*/
+                                                {
+                                                    $$=$1;
+                                                    $$->value=substitute_id($2);
+                                                }
+                                            }
+                |ID ':'                     {//TODO
+                                                $$=$1;
+                                            }
                 ;
     
                 
