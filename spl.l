@@ -3,9 +3,9 @@
 #include "data.h"
 #include "node.h"
 int linecount=1;
-
+void create_node(char nodetype, char *name, int value);
 %}
-
+%option noyywrap
 %%
 
 
@@ -310,5 +310,5 @@ int linecount=1;
 
 void create_node(char nodetype, char *name, int value)
 {    
-    yylval.n=create_tnode(char nodetype, char *name, int value);
+    yylval.n=create_tnode(nodetype, name, value);
 }

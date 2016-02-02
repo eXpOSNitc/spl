@@ -1,5 +1,5 @@
 #Our compiler.
-CC = cc
+CC = gcc
 CFLAGS = -g
 LEX = lex
 YACC = yacc

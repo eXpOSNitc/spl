@@ -1,4 +1,6 @@
 #include "node.h"
+#include <stdlib.h>
+#include <string.h>
 
 struct tree* create_tnode(char nodetype, char *name, int value)
 {
