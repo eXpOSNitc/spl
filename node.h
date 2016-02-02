@@ -65,6 +65,5 @@ struct tree
     struct tree *ptr1,*ptr2,*ptr3;
 };
 
-void create_node(char, char*, int);    //nodetype,name,value
-
+struct tree* create_tnode(char nodetype, char *name, int value)    //nodetype,name,value
 #endif

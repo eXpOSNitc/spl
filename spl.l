@@ -310,13 +310,5 @@ int linecount=1;
 
 void create_node(char nodetype, char *name, int value)
 {    
-    yylval.n=malloc(sizeof(struct tree));
-    yylval.n->nodetype=nodetype;
-    if(name!=NULL)
-        yylval.n->name=strdup(name);
-    yylval.n->value=value;
-    yylval.n->entry=NULL;
-    yylval.n->ptr1=NULL;
-    yylval.n->ptr2=NULL;
-    yylval.n->ptr3=NULL;
+    yylval.n=create_tnode(char nodetype, char *name, int value);
 }

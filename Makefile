@@ -1,10 +1,36 @@
-all:	spl
-lex.yy.c:	spl.l data.h
-		lex spl.l
+#Our compiler.
+CC = cc
+CFLAGS = -g
+LEX = lex
+YACC = yacc
 
-y.tab.c:	spl.y spl.h data.h
-		yacc -d spl.y
-spl:		lex.yy.c y.tab.c data.c spl.c
-		gcc lex.yy.c y.tab.c data.c spl.c -ll -o spl
+#Default rule.
+
+default: spl
+
+spl: lex.yy.o y.tab.o node.o data.o spl.o
+	$(CC) $(CFLAGS) -o spl  lex.yy.o y.tab.o node.o data.o spl.o 
+
+node.o: node.c node.h
+	$(CC) $(CFLAGS) -c node.c
+
+data.o: data.c data.h
+	$(CC) $(CFLAGS) -c data.c
+
+spl.o: spl.c spl.h data.h node.h
+	$(CC) $(CFLAGS) -c spl.c
+
+lex.yy.o: lex.yy.c y.tab.c
+	$(CC) $(CFLAGS) -c lex.yy.c
+
+y.tab.o: y.tab.c y.tab.h
+	$(CC) $(CFLAGS) -c y.tab.c
+
+lex.yy.c: spl.l
+	$(LEX) spl.l
+
+y.tab.c: spl.y
+	$(YACC) -d spl.y
+
 clean:
-	rm -rf spl *~ y.* lex.* 
+	$(RM) spl *.o lex.yy.c y.tab.h y.tab.c
