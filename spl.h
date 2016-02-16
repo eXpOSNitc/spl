@@ -74,15 +74,15 @@ struct jmp_point
     struct jmp_point *next;
     struct jmp_point *points; 
 };
-struct label
+struct label_old
 {
     int i;
     unsigned long pos1,pos2;
     char instr1[32],instr2[32];
-    struct label *next;
+    struct label_old *next;
     struct jmp_point *points;  
 };
-extern struct label *root_label, *root_while;
+extern struct label_old *root_label, *root_while;
 
 void push_label();
 int pop_label();

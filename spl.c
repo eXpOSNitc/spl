@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "spl.h"
+#include "label.h"
 
 unsigned long temp_pos; //temporary lseek
 int out_linecount=0; //no of lines of code generated
@@ -11,7 +12,7 @@ int regcount=0;
 FILE *fp;
                         //start labels
 int labelcount=0;
-struct label *root_label=NULL, *root_while=NULL;
+struct label_old *root_label=NULL, *root_while=NULL;
 
 struct named_label_list *rootNamedLabelList=NULL;/*List of usages of named labels*/
 struct named_label *rootNamedLabel=NULL;/*List of named Labels*/
@@ -23,8 +24,8 @@ struct alias *root_alias=NULL;
 
 void push_label()
 {
-    struct label *temp;
-    temp=malloc(sizeof(struct label));
+    struct label_old *temp;
+    temp=malloc(sizeof(struct label_old));
     temp->i=labelcount;
     temp->pos1=0;
     temp->pos2=0;
@@ -38,58 +39,14 @@ void push_label()
 int pop_label()
 {
     int i;
-    struct label *temp;
+    struct label_old *temp;
     temp=root_label;
     root_label=root_label->next;
     i=temp->i;
     free(temp);
     return i;
 }
-void push_while(int n)
-{
-    struct label *temp;
-    temp=malloc(sizeof(struct label));
-    temp->i=n;
-    temp->pos1=0;
-    temp->pos2=0;
-    bzero(temp->instr1,32);
-    bzero(temp->instr2,32);
-    temp->points=NULL;
-    temp->next=root_while;
-    root_while=temp; 
-}
-void pop_while()
-{
-    struct label *temp;
-    temp=root_while;
-    root_while=root_while->next;
-    free(temp);
-}
-void add_jmp_point(char instr[32])
-{
-    struct jmp_point *temp;
-    temp=malloc(sizeof(struct jmp_point)); 
-    fflush(fp);
-    temp->pos = ftell(fp);
-    strcpy(temp->instr,instr);
-    temp->next = root_while->points;
-    root_while->points = temp;    
-}
-void use_jmp_points(struct jmp_point *root)
-{
-    if(root == NULL)
-        return;
-    else
-    {
-        fflush(fp);
-        temp_pos = ftell(fp);
-        fseek(fp,root->pos,SEEK_SET);
-        fprintf(fp,"%s %05d",root->instr,addrBaseVal + out_linecount*2);
-        fseek(fp,temp_pos,SEEK_SET);
-        use_jmp_points(root->next);
-        free(root);
-    }
-}
+
                         ///end labels
                         ///start constants and aliasing
 
@@ -286,6 +243,7 @@ void codegen(struct tree * root)
 {
     int n;
     char reg1[5], reg2[5];
+    label *l1,*l2;
     if(root==NULL)
         return;    
     switch(root->nodetype)
@@ -1042,49 +1000,38 @@ void codegen(struct tree * root)
             pop_label();
             break;
         case NODE_WHILE:    //WHILE loop
-            push_label();
-            push_while(root_label->i);
-            root_label->pos1=addrBaseVal +  out_linecount*2;
-            root_while->pos1=addrBaseVal +  out_linecount*2;
+            l1=create_label();/*start of while*/
+            l2=create_label();/*end of while*/
+            label_pushWhile(l1,l2);
+            fprintf(fp, "%s:\n", label_getName(l1));
             if(root->ptr1->nodetype==NODE_REG)
             {
                 getreg(root->ptr1, reg1);
-                fflush(fp);
-                root_label->pos2 = ftell(fp);
                 out_linecount++;
-                fprintf(fp, "JZ %s, 00000\n", reg1);
-                sprintf(root_label->instr2, "JZ %s,", reg1);
+                fprintf(fp, "JZ %s, %s\n", reg1,label_getName(l2));
             }
             else
             {                
                 codegen(root->ptr1);
-                fflush(fp);
-                root_label->pos2 = ftell(fp);
                 out_linecount++;
-                fprintf(fp, "JZ R%d, 00000\n", C_REG_BASE + regcount-1);
-                sprintf(root_label->instr2, "JZ R%d,", C_REG_BASE + regcount-1);
+                fprintf(fp, "JZ R%d, %s\n", C_REG_BASE + regcount-1,label_getName(l2));
                 regcount--;
-            }            
+            }   
             codegen(root->ptr2);
             out_linecount++;
-            fprintf(fp, "JMP %ld\n", root_label->pos1);
-            fflush(fp);
-            temp_pos = ftell(fp);
-            fseek(fp,root_label->pos2,SEEK_SET);
-            fprintf(fp,"%s %05d",root_label->instr2,addrBaseVal +  out_linecount*2);
-            fseek(fp,temp_pos,SEEK_SET);
-            use_jmp_points(root_while->points);
-            pop_while();
-            pop_label();
+            fprintf(fp, "JMP %s\n", label_getName(l1));
+            label_popWhile();
+            fprintf(fp, "%s:\n", label_getName(l2));
             break;
         case NODE_BREAK:    //BREAK loop
-            add_jmp_point("JMP");
+            l1=label_getWhileEnd();
             out_linecount++;
-            fprintf(fp, "JMP 00000\n");
+            fprintf(fp, "JMP %s\n",label_getName(l1));
             break;
         case NODE_CONTINUE:    //CONTINUE loop
+            l1=label_getWhileStart();
             out_linecount++;
-            fprintf(fp, "JMP %ld\n", root_while->pos1);
+            fprintf(fp, "JMP %s\n",label_getName(l1));
             break;
         case NODE_LOADI:    //Loadi
             if(root->ptr1->nodetype==NODE_REG)

@@ -258,7 +258,7 @@ whilepad:       WHILE                       {
                                                 $$=$1;
                                             }
                 ;
-            
+
 ids:            ID                          {                            
                                                 $$=substitute_id($1);
                                             }
