@@ -4,7 +4,6 @@
 #include "label.h"
 
 int out_linecount=0; //no of lines of code generated
-int addrBaseVal;    //Starting Address where the compiled code will be loaded
 int flag_break=0;
 int regcount=0;
 
@@ -127,7 +126,7 @@ void add_predefined_constants()
         if (fscanf(c_fp ,"%s %d",name,&value))
         {
             if(lookup_constant(name)==NULL)
-                insert_constant(name, INODE_TABLE);
+                insert_constant(name, value);
         }
         else
             break;
@@ -1224,27 +1223,6 @@ void codegen(struct tree * root)
             printf("Unknown Command %d %s\n", root->nodetype, root->name);        //Debugging
             return;
     }
-}
-
-void expandpath(char *path) // To expand environment variables in path
-{
-    char *rem_path = strdup(path);
-    char *token = strsep(&rem_path, "/");
-    if(rem_path!=NULL)
-        sprintf(path,"%s/%s",getenv(++token)!=NULL?getenv(token):token-1,rem_path);
-    else
-        sprintf(path,"%s",getenv(++token)!=NULL?getenv(token):token-1);
-}
-
-void remfilename(char *pathname)
-{
-    int l = strlen(pathname);
-    int i = l-1;    
-    while(pathname[i] != '/' && i>=0)
-    {
-        i--;
-    }
-    pathname[i+1]='\0';    
 }
 
 struct tree * get_namedLabel_node(struct tree* node)

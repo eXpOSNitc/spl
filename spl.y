@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include "data.h"
 #include "spl.h"
+#include "file.h"
 extern FILE *yyin;
 %}
 %union
@@ -278,7 +279,7 @@ int main (int argc,char **argv)
         exit(0);
     }
     strcpy(filename,argv[2]);
-    expandpath(filename);
+    file_expandPath(filename);
     input_fp = fopen(filename,"r");
     if(!input_fp)
     {
@@ -286,134 +287,7 @@ int main (int argc,char **argv)
         return 0;
     }
     yyin = input_fp;
-    remfilename(filename);
-    strcpy( op_name, filename );
-    if(strcmp(argv[1],"--os") == 0)
-    {
-        strcat(op_name,"os_startup.xsm");
-        addrBaseVal = OS_STARTUP;
-    }
-    else if(strcmp(argv[1],"--exhandler") == 0)
-    {
-        strcat(op_name,"exhandler.xsm");
-        addrBaseVal = EX_HANDLER;
-    }
-    else if(strcmp(argv[1],"--int=timer") == 0)
-    {
-        strcat(op_name,"timer.xsm");
-        addrBaseVal = T_INTERRUPT;
-    }
-    else if(strcmp(argv[1],"--int=disk") == 0)
-    {
-        strcat(op_name,"disk.xsm");
-        addrBaseVal = D_INTERRUPT;
-    }
-    else if(strcmp(argv[1],"--int=console") == 0)
-    {
-        strcat(op_name,"console.xsm");
-        addrBaseVal = C_INTERRUPT;
-    }
-    else if(strcmp(argv[1],"--int=1") == 0)
-    {
-        strcat(op_name,"int1.xsm");
-        addrBaseVal = T_INTERRUPT + 1*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=2") == 0)
-    {
-        strcat(op_name,"int2.xsm");
-        addrBaseVal = T_INTERRUPT + 2*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=3") == 0)
-    {
-        strcat(op_name,"int3.xsm");
-        addrBaseVal = T_INTERRUPT + 3*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=4") == 0)
-    {
-        strcat(op_name,"int4.xsm");
-        addrBaseVal = T_INTERRUPT + 4*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=5") == 0)
-    {
-        strcat(op_name,"int5.xsm");
-        addrBaseVal = T_INTERRUPT + 5*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=6") == 0)
-    {
-        strcat(op_name,"int6.xsm");
-        addrBaseVal = T_INTERRUPT + 6*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=7") == 0)
-    {
-        strcat(op_name,"int7.xsm");
-        addrBaseVal = T_INTERRUPT + 7*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=8") == 0)
-    {
-        strcat(op_name,"int8.xsm");
-        addrBaseVal = T_INTERRUPT + 8*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=9") == 0)
-    {
-        strcat(op_name,"int9.xsm");
-        addrBaseVal = T_INTERRUPT + 9*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=10") == 0)
-    {
-        strcat(op_name,"int10.xsm");
-        addrBaseVal = T_INTERRUPT + 10*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=11") == 0)
-    {
-        strcat(op_name,"int11.xsm");
-        addrBaseVal = T_INTERRUPT + 11*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=12") == 0)
-    {
-        strcat(op_name,"int12.xsm");
-        addrBaseVal = T_INTERRUPT + 12*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=13") == 0)
-    {
-        strcat(op_name,"int13.xsm");
-        addrBaseVal = T_INTERRUPT + 13*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=14") == 0)
-    {
-        strcat(op_name,"int14.xsm");
-        addrBaseVal = T_INTERRUPT + 14*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=15") == 0)
-    {
-        strcat(op_name,"int15.xsm");
-        addrBaseVal = T_INTERRUPT + 15*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=16") == 0)
-    {
-        strcat(op_name,"int16.xsm");
-        addrBaseVal = T_INTERRUPT + 16*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=17") == 0)
-    {
-        strcat(op_name,"int17.xsm");
-        addrBaseVal = T_INTERRUPT + 17*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=18") == 0)
-    {
-        strcat(op_name,"int18.xsm");
-        addrBaseVal = T_INTERRUPT + 18*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else if(strcmp(argv[1],"--int=19") == 0)
-    {
-        strcat(op_name,"int19.xsm");
-        addrBaseVal = T_INTERRUPT + 19*PAGE_PER_INTERRUPT*PAGE_SIZE;
-    }
-    else
-    {
-        printf("Invalid arguement %s\n", argv[1]);
-        fclose(input_fp);
-        exit(0);
-    }
+    file_getOpFileName(op_name, filename);
     fp=fopen(".temp","w");
     out_linecount++;
     fprintf(fp,"START\n");

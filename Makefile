@@ -8,11 +8,14 @@ YACC = yacc
 
 default: spl
 
-spl: lex.yy.o y.tab.o node.o data.o spl.o label.o
-	$(CC) $(CFLAGS) -o spl  lex.yy.o y.tab.o node.o data.o spl.o label.o
+spl: lex.yy.o y.tab.o node.o data.o spl.o label.o file.o
+	$(CC) $(CFLAGS) -o spl  lex.yy.o y.tab.o node.o data.o spl.o label.o file.o
 
 node.o: node.c node.h
 	$(CC) $(CFLAGS) -c node.c
+
+file.o: file.c file.h
+	$(CC) $(CFLAGS) -c file.c
 
 label.o: label.c label.h
 	$(CC) $(CFLAGS) -c label.c
