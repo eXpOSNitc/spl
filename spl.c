@@ -3,52 +3,20 @@
 #include "spl.h"
 #include "label.h"
 
-unsigned long temp_pos; //temporary lseek
 int out_linecount=0; //no of lines of code generated
 int addrBaseVal;    //Starting Address where the compiled code will be loaded
 int flag_break=0;
 int regcount=0;
 
 FILE *fp;
-                        //start labels
-int labelcount=0;
-struct label_old *root_label=NULL, *root_while=NULL;
 
-struct named_label_list *rootNamedLabelList=NULL;/*List of usages of named labels*/
-struct named_label *rootNamedLabel=NULL;/*List of named Labels*/
+                        ///start constants and aliasing
+
 struct define *root_define=NULL;
 char alias_table[8][30];
 int depth=0;
 
 struct alias *root_alias=NULL;
-
-void push_label()
-{
-    struct label_old *temp;
-    temp=malloc(sizeof(struct label_old));
-    temp->i=labelcount;
-    temp->pos1=0;
-    temp->pos2=0;
-    bzero(temp->instr1,32);
-    bzero(temp->instr2,32);
-    temp->points=NULL;
-    temp->next=root_label;    
-    root_label=temp; 
-    labelcount++;
-}
-int pop_label()
-{
-    int i;
-    struct label_old *temp;
-    temp=root_label;
-    root_label=root_label->next;
-    i=temp->i;
-    free(temp);
-    return i;
-}
-
-                        ///end labels
-                        ///start constants and aliasing
 
 struct define* lookup_constant(char *name)
 {
@@ -960,44 +928,27 @@ void codegen(struct tree * root)
             regcount++;
             break;
         case NODE_IF:    //IF statement ,  IF-ELSE statements
-            push_label();            
+            l1=create_label();/*start of else*/
+            l2=create_label();/*end of else(outside of if else block)*/
             if(root->ptr1->nodetype==NODE_REG)
             {
                 getreg(root->ptr1, reg1);
-                fflush(fp);
-                root_label->pos1 = ftell(fp);
                 out_linecount++;
-                fprintf(fp, "JZ %s, 00000\n", reg1);
-                sprintf(root_label->instr1, "JZ %s,", reg1);
+                fprintf(fp, "JZ %s, %s\n", reg1, label_getName(l1));
             }
             else
             {                
-                codegen(root->ptr1);
-                fflush(fp);
-                root_label->pos1 = ftell(fp);
+                codegen(root->ptr1);/*if condition*/
                 out_linecount++;
-                fprintf(fp, "JZ R%d, 00000\n", C_REG_BASE + regcount-1);
-                sprintf(root_label->instr1, "JZ R%d,", C_REG_BASE + regcount-1);
+                fprintf(fp, "JZ R%d, %s\n", C_REG_BASE + regcount-1, label_getName(l1));
                 regcount--;
-            }            
-            codegen(root->ptr2);
-            fflush(fp);
-            root_label->pos2 = ftell(fp);
+            }
+            codegen(root->ptr2);/*if block*/
             out_linecount++;
-            fprintf(fp, "JMP 00000\n");
-            sprintf(root_label->instr2, "JMP");
-            fflush(fp);
-            temp_pos = ftell(fp);
-            fseek(fp,root_label->pos1,SEEK_SET);
-            fprintf(fp,"%s %05d",root_label->instr1,addrBaseVal +  out_linecount*2);
-            fseek(fp,temp_pos,SEEK_SET);
-            codegen(root->ptr3);
-            fflush(fp);
-            temp_pos = ftell(fp);
-            fseek(fp,root_label->pos2,SEEK_SET);
-            fprintf(fp,"%s %05d",root_label->instr2,addrBaseVal +  out_linecount*2);
-            fseek(fp,temp_pos,SEEK_SET);
-            pop_label();
+            fprintf(fp, "JMP %s\n", label_getName(l2));
+            fprintf(fp, "%s:\n", label_getName(l1));
+            codegen(root->ptr3);/*else block*/
+            fprintf(fp, "%s:\n", label_getName(l2));
             break;
         case NODE_WHILE:    //WHILE loop
             l1=create_label();/*start of while*/
