@@ -41,3 +41,8 @@ char node_getType(node *nn)
 {
     return nn->nodetype;
 }
+
+char* node_getName(node *nn)
+{
+    return nn->name;
+}

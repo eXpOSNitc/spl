@@ -68,6 +68,7 @@ typedef struct tree
 
 node* create_termNode(char nodetype, char *name, int value);    //nodetype,name,value
 char node_getType(node *nn);
+char* node_getName(node *nn);
 node* create_nontermNode(char nodetype, node *a, node *b);
 node * create_tree(node *a, node *b, node *c, node *d);
 #endif

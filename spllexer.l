@@ -43,7 +43,7 @@ void create_node(char nodetype, char *name, int value);
             }
 
 "call"      {
-                create_node(NODE_CALL,NULL,-1);
+                create_node( NODE_CALL,NULL,-1);
                 return CALL;
             }
 

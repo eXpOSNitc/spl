@@ -117,16 +117,16 @@ void add_predefined_constants()
     int value;
     FILE *c_fp;
     
-    c_fp = fopen("constants","r");
+    c_fp = fopen("splconstants.cfg","r");
     if(!c_fp)
     {
-        printf("\nUnable to open constants file!\nExiting\n");
+        printf("\nUnable to open splconstants.cfg file!\nExiting\n");
         exit(0);
     }
     while (!feof(c_fp))
     {
         bzero(name,15);
-        if (fscanf(c_fp ,"%s %d",name,&value))
+        if (fscanf(c_fp ,"%s %d",name,&value)==2)
         {
             if(lookup_constant(name)==NULL)
                 insert_constant(name, value);
@@ -1205,8 +1205,46 @@ void codegen(node * root)
             out_linecount++;
             fprintf(fp, "ENCRYPT %s\n", reg1);
             break;
+        case NODE_LABEL_DEF:
+            fprintf(fp,"%s:\n",root->ptr1->name);
+            break;
+        case NODE_CALL:
+            if(root->ptr1->nodetype==NODE_NUM)
+            {
+                fprintf(fp,"CALL %d\n",root->ptr1->value);
+            }
+            else
+            {
+                if(label_get(root->ptr1->name)==NULL)
+                {
+                    fprintf(stderr,"%d: Label '%s' is not declared",root->value,root->ptr1->name);
+                    exit(0);
+                }
+                else
+                {
+                    fprintf(fp,"CALL %s\n",root->ptr1->name);
+                }
+            }
+            break;
+        case NODE_GOTO:
+            if(root->ptr1->nodetype==NODE_NUM)
+            {
+                fprintf(fp,"GOTO %d\n",root->ptr1->value);
+            }
+            else
+            {
+                if(label_get(root->ptr1->name)==NULL)
+                {
+                    fprintf(stderr,"%d: Label '%s' is not declared",root->value,root->ptr1->name);
+                }
+                else
+                {
+                    fprintf(fp,"GOTO %s\n",root->ptr1->name);
+                }
+            }
+            break;
         default:
-            printf("Unknown Command %d %s\n", root->nodetype, root->name);        //Debugging
+            fprintf(stderr,"Unknown Command %d %s\n", root->nodetype, root->name);        //Debugging
             return;
     }
 }

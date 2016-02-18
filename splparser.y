@@ -171,33 +171,30 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 }                            
                                                 $$=create_tree($1,$2,NULL,NULL);
                                             }
-                |GOTO ID ';'                {//TODO
-                                                if(lookup_constant($2->name)==NULL)/*if the address to jump to is a predefined value in constants file*/
+                |GOTO ID ';'                {
+                                                if(lookup_constant(node_getName($2))!=NULL)/*if the address to jump to is a predefined value in constants file*/
                                                 {
-                                                    $$=$1;
-                                                    $$->ptr1=substitute_id($2);
+                                                    $$=create_tree($1,substitute_id($2),NULL,NULL);
                                                 }
                                                 else
                                                 {
-                                                    $$=$1;
-                                                    $$->ptr1=$2;
+                                                    $$=create_tree($1,$2,NULL,NULL);
                                                 }
                                                 $$->value=linecount;/*Hack to show line numbers in case of syntax errors*/
                                             }
-                |CALL ID ';'                {//TODO
-                                                if(lookup_constant($2->name)==NULL)/*if the address to call is a predefined value in constants file*/
+                |CALL ID ';'                {
+                                                if(lookup_constant(node_getName($2))!=NULL)/*if the address to jump to is a predefined value in constants file*/
                                                 {
-                                                    $$=$1;
-                                                    $$->ptr1=substitute_id($2);
+                                                    $$=create_tree($1,substitute_id($2),NULL,NULL);
                                                 }
                                                 else
                                                 {
-                                                    $$=$1;
-                                                    $$->ptr1=$2;
+                                                    $$=create_tree($1,$2,NULL,NULL);
                                                 }
                                                 $$->value=linecount;/*Hack to show line numbers in case of syntax errors*/
                                             }
                 |ID ':'                     {
+                                                label_add(node_getName($1));
                                                 $$=create_nontermNode(NODE_LABEL_DEF,$1,NULL);
                                             }
                 ;

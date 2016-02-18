@@ -1,5 +1,7 @@
 #include "label.h"
+#include "y.tab.h"
 
+extern int linecount;
 static label *_root_label=NULL;
 static int _namegen=1;
 
@@ -18,8 +20,7 @@ label* label_create()
 /*Create a new label with given name*/
 label* _label_create(const char* name)
 {
-    label* new_label=NULL;
-    new_label=(label*)malloc(sizeof(label));
+    label* new_label=(label*)malloc(sizeof(label));
     new_label->name=strdup(name);
     new_label->next=NULL;
     return new_label;
@@ -27,6 +28,11 @@ label* _label_create(const char* name)
 
 label* label_add(const char* name)
 {
+    if(label_get(name)!=NULL)
+    {
+        fprintf(stderr,"\n%d: Label '%s' redeclared.",linecount,name);
+        exit(0);
+    }
     label* new_label=_label_create(name);
     new_label->next=_root_label;
     _root_label=new_label;
