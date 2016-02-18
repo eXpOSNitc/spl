@@ -17,13 +17,5 @@ Compiling and Running :
 ---------------------
 Run the following commands to compile and run the SPL compiler
 	1. make
-	2. ./spl <flag> < <path-to-file>
-	
-Flags :
------
-Any one of these flags is required to compile.
-	• --os : Compile OS Code
-	• --int=timer : Compile Timer Interrupt code
-	• --int=[1-7] : Compile Interrupt routines
-	• --exhandler : Compile Exception Handler
+	2. ./spl <path-to-file>
 
