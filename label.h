@@ -16,8 +16,9 @@ typedef struct l_whilet
     struct l_whilet *next;
 }l_while;
  
-label* create_label();
-label* add_label(const char* name);
+label* label_create();
+label* label_add(const char* name);
+label* _label_create(const char* name);
 char* label_getName(label *ll);
 void label_pushWhile(label *start, label *end);
 void label_popWhile();

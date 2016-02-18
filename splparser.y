@@ -4,7 +4,6 @@
 #include "data.h"
 #include "spl.h"
 #include "file.h"
-extern FILE *yyin;
 %}
 %union
 {
@@ -268,51 +267,7 @@ ids:            ID                          {
                                             }
                 ;
 %%
-int main (int argc,char **argv)
-{    
-    FILE *input_fp;
-    char filename[200],ch;
-    char op_name[200];
-    if(argc < 3)
-    {
-        printf("Incorrect Usage.\nSee usage manual\n");
-        exit(0);
-    }
-    strcpy(filename,argv[2]);
-    file_expandPath(filename);
-    input_fp = fopen(filename,"r");
-    if(!input_fp)
-    {
-        printf("Invalid input file\n");
-        return 0;
-    }
-    yyin = input_fp;
-    file_getOpFileName(op_name, filename);
-    fp=fopen(".temp","w");
-    out_linecount++;
-    fprintf(fp,"START\n");
-    yyparse();
-    fclose(input_fp);
-    fclose(fp);
-    input_fp = fopen(".temp","r");
-    if(!input_fp)
-    {
-        printf("Writing compiled code to file failed\n");
-        return 0;
-    }
-    fp = fopen(op_name,"w");
-    if(!fp)
-    {
-        fclose(input_fp);
-        printf("Writing compiled code to file failed\n");
-        return 0;
-    }
-    while( ( ch = fgetc(input_fp) ) != EOF )
-        fputc(ch, fp);
-    fclose(input_fp);
-    fclose(fp);    
-    return 0;
-}
+
 int yyerror (char *msg) 
 {
     return fprintf (stderr, "%d: %s\n",linecount,msg);

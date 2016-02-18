@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "spl.h"
 #include "label.h"
+#include "y.tab.h"
+
+extern FILE *yyin;
 
 int out_linecount=0; //no of lines of code generated
 int flag_break=0;
@@ -927,8 +930,8 @@ void codegen(struct tree * root)
             regcount++;
             break;
         case NODE_IF:    //IF statement ,  IF-ELSE statements
-            l1=create_label();/*start of else*/
-            l2=create_label();/*end of else(outside of if else block)*/
+            l1=label_create();/*start of else*/
+            l2=label_create();/*end of else(outside of if else block)*/
             if(root->ptr1->nodetype==NODE_REG)
             {
                 getreg(root->ptr1, reg1);
@@ -948,10 +951,12 @@ void codegen(struct tree * root)
             fprintf(fp, "%s:\n", label_getName(l1));
             codegen(root->ptr3);/*else block*/
             fprintf(fp, "%s:\n", label_getName(l2));
+            label_free(l1);
+            label_free(l2);
             break;
         case NODE_WHILE:    //WHILE loop
-            l1=create_label();/*start of while*/
-            l2=create_label();/*end of while*/
+            l1=label_create();/*start of while*/
+            l2=label_create();/*end of while*/
             label_pushWhile(l1,l2);
             fprintf(fp, "%s:\n", label_getName(l1));
             if(root->ptr1->nodetype==NODE_REG)
@@ -972,6 +977,8 @@ void codegen(struct tree * root)
             fprintf(fp, "JMP %s\n", label_getName(l1));
             label_popWhile();
             fprintf(fp, "%s:\n", label_getName(l2));
+            label_free(l1);
+            label_free(l2);
             break;
         case NODE_BREAK:    //BREAK loop
             l1=label_getWhileEnd();
@@ -1228,4 +1235,45 @@ void codegen(struct tree * root)
 struct tree * get_namedLabel_node(struct tree* node)
 {
     return NULL;   
+}
+
+int main (int argc,char **argv)
+{    
+    FILE *input_fp;
+    char filename[200],ch;
+    char op_name[200];
+    strcpy(filename,argv[1]);
+    file_expandPath(filename);
+    input_fp = fopen(filename,"r");
+    if(!input_fp)
+    {
+        printf("Invalid input file\n");
+        return 0;
+    }
+    yyin = input_fp;
+    file_getOpFileName(op_name, filename);
+    fp=fopen(".temp","w");
+    out_linecount++;
+    fprintf(fp,"START\n");
+    yyparse();
+    fclose(input_fp);
+    fclose(fp);
+    input_fp = fopen(".temp","r");
+    if(!input_fp)
+    {
+        printf("Writing compiled code to file failed\n");
+        return 0;
+    }
+    fp = fopen(op_name,"w");
+    if(!fp)
+    {
+        fclose(input_fp);
+        printf("Writing compiled code to file failed\n");
+        return 0;
+    }
+    while( ( ch = fgetc(input_fp) ) != EOF )
+        fputc(ch, fp);
+    fclose(input_fp);
+    fclose(fp);    
+    return 0;
 }
