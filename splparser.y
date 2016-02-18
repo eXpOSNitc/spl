@@ -4,6 +4,7 @@
 #include "data.h"
 #include "spl.h"
 #include "file.h"
+#include "node.h"
 %}
 %union
 {
@@ -39,7 +40,7 @@ definestmt:     DEFINE ID NUM ';'               {
                                                     insert_constant($2->name,$3->value);
                                                 }
                 |DEFINE ID ARITHOP1 NUM ';'     {
-                                                    if($3->nodetype==NODE_SUB)
+                                                    if(node_getType($3)==NODE_SUB)
                                                         insert_constant($2->name,-1*$4->value);
                                                     else
                                                         insert_constant($2->name,$4->value);
@@ -47,8 +48,7 @@ definestmt:     DEFINE ID NUM ';'               {
                 ;
 
 stmtlist:       stmtlist stmt                   {
-                                                    $$=create_nonterm_node("Body",$1,$2);
-                                                    $$->nodetype=NODE_STMTLIST;
+                                                    $$=create_nontermNode(NODE_STMTLIST,$1,$2);
                                                 }
                 |stmt                           {
                                                     $$=$1;
@@ -56,7 +56,7 @@ stmtlist:       stmtlist stmt                   {
                 ;
 
 stmt:           expr ASSIGNOP expr ';'          {
-                                                    if($1->nodetype==NODE_REG || $1->nodetype==NODE_ADDR_EXPR)
+                                                    if(node_getType($1)==NODE_REG || node_getType($1)==NODE_ADDR_EXPR)
                                                     {
                                                         $2->value=2;
                                                         $$=create_tree($2,$1,$3,NULL);
@@ -68,7 +68,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                     }
                                                 }
                 |expr ASSIGNOP PORT ';'         {
-                                                    if($1->nodetype==NODE_REG || $1->nodetype==NODE_ADDR_EXPR)
+                                                    if(node_getType($1)==NODE_REG || node_getType($1)==NODE_ADDR_EXPR)
                                                     {
                                                         $2->value=2;
                                                         $$=create_tree($2,$1,$3,NULL);
@@ -147,7 +147,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$=$1;
                                             }
                 |READI ids ';'              {    
-                                                if($2->nodetype!=NODE_REG||!isAllowedRegister($2->value))
+                                                if(node_getType($2)!=NODE_REG||!isAllowedRegister($2->value))
                                                 {
                                                     printf("\n%d:Invalid operand in read!!\n",linecount);
                                                     exit(0);
@@ -164,7 +164,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$ = create_tree($1, NULL, NULL, NULL);
                                             }
                 |ENCRYPT ids ';'            {    
-                                                if($2->nodetype!=NODE_REG||!isAllowedRegister($2->value))
+                                                if(node_getType($2)!=NODE_REG||!isAllowedRegister($2->value))
                                                 {
                                                     printf("\n%d:Invalid operand in encrypt!!\n",linecount);
                                                     exit(0);
@@ -198,8 +198,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 $$->value=linecount;/*Hack to show line numbers in case of syntax errors*/
                                             }
                 |ID ':'                     {
-                                                $$=create_nonterm_node("Label Def",$1,NULL);
-                                                $$->nodetype=NODE_LABEL_DEF;
+                                                $$=create_nontermNode(NODE_LABEL_DEF,$1,NULL);
                                             }
                 ;
     
@@ -217,7 +216,7 @@ expr:           expr ARITHOP1 expr          {
                                                 $$=create_tree($2,$1,$3,NULL);
                                             }
                 |ARITHOP1 NUM   %prec UMIN  {
-                                                if($1->nodetype==NODE_SUB)
+                                                if(node_getType($1)==NODE_SUB)
                                                     $2->value=$2->value*-1;
                                                 $$=$2;
                                             }
@@ -225,8 +224,7 @@ expr:           expr ARITHOP1 expr          {
                                                 $$=create_tree($1,$2,NULL,NULL);
                                             }
                 |'['expr']'                 {
-                                                $$=create_nonterm_node("addr",$2,NULL);
-                                                $$->nodetype=NODE_ADDR_EXPR;
+                                                $$=create_nontermNode(NODE_ADDR_EXPR,$2,NULL);
                                             }                    
                 |'('expr')'                 {
                                                 $$=$2;

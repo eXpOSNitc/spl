@@ -310,5 +310,5 @@ void create_node(char nodetype, char *name, int value);
 
 void create_node(char nodetype, char *name, int value)
 {    
-    yylval.n=create_tnode(nodetype, name, value);
+    yylval.n=create_termNode(nodetype, name, value);
 }

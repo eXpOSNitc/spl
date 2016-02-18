@@ -138,7 +138,7 @@ void add_predefined_constants()
     fclose(c_fp);
 }
 
-struct tree * substitute_id(struct tree *id)
+node * substitute_id(node *id)
 {
     struct define *temp;
     struct alias *temp2;
@@ -162,28 +162,7 @@ struct tree * substitute_id(struct tree *id)
     return(id);
 }
                             ///end of constants and alias
-                            ///start tree create fns
-struct tree * create_nonterm_node(char *name, struct tree *a, struct tree *b)
-{
-    struct tree *temp=malloc(sizeof(struct tree));
-    temp->nodetype=NODE_NONTERM;
-    temp->name=name;
-    temp->entry=NULL;
-    temp->ptr1=a;
-    temp->ptr2=b;
-    temp->ptr3=NULL;
-    return temp;
-}
-struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct tree *d)
-{    
-    a->ptr1=b;
-    a->ptr2=c;
-    a->ptr3=d;
-    
-    return a;
-}
-                            ///end tree create fns
-void getreg(struct tree *root, char reg[])
+void getreg(node *root, char reg[])
 {
     if(root->value >= R0 && root->value <= R15)
         sprintf(reg, "R%d", root->value - R0);
@@ -209,7 +188,7 @@ void getreg(struct tree *root, char reg[])
         sprintf(reg, "EMA");
 }
 
-void codegen(struct tree * root)
+void codegen(node * root)
 {
     int n;
     char reg1[5], reg2[5];
@@ -1232,7 +1211,7 @@ void codegen(struct tree * root)
     }
 }
 
-struct tree * get_namedLabel_node(struct tree* node)
+node * get_namedLabel_node(node* node)
 {
     return NULL;   
 }

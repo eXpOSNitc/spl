@@ -55,7 +55,8 @@ struct define
     int value;
     struct define *next;
 };
-struct tree
+
+typedef struct tree
 {
     char nodetype;        
                    
@@ -63,7 +64,10 @@ struct tree
     int value;
     struct define *entry;
     struct tree *ptr1,*ptr2,*ptr3;
-};
+}node;
 
-struct tree* create_tnode(char nodetype, char *name, int value);    //nodetype,name,value
+node* create_termNode(char nodetype, char *name, int value);    //nodetype,name,value
+char node_getType(node *nn);
+node* create_nontermNode(char nodetype, node *a, node *b);
+node * create_tree(node *a, node *b, node *c, node *d);
 #endif

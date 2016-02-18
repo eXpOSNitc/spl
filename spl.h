@@ -37,18 +37,14 @@ void pop_alias();
 void insert_constant(char *name, int value);
 void add_predefined_constants();
 
-struct tree * substitute_id(struct tree *id);
+node * substitute_id(node *id);
                             ///end of constants and alias
-                            ///start tree create fns
-                            
-struct tree * create_nonterm_node(char *name, struct tree *a, struct tree *b);
-struct tree * create_tree(struct tree *a, struct tree *b, struct tree *c, struct tree *d);
                             ///end tree create fns
-void getreg(struct tree *root, char reg[]);
+void getreg(node *root, char reg[]);
 
-void codegen(struct tree * root);
+void codegen(node * root);
 
 void expandpath(char *path); // To expand environment variables in path
 
 void remfilename(char *pathname);
-struct tree * get_namedLabel_node(struct tree* node);
+node * get_namedLabel_node(node* node);
