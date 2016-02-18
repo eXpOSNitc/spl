@@ -32,8 +32,8 @@ lex.yy.o: lex.yy.c y.tab.c
 y.tab.o: y.tab.c y.tab.h
 	$(CC) $(CFLAGS) -c y.tab.c
 
-lex.yy.c: spl.l
-	$(LEX) spl.l
+lex.yy.c: spllexer.l
+	$(LEX) spllexer.l
 
 y.tab.c: splparser.y
 	$(YACC) -d splparser.y
