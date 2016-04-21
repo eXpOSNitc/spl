@@ -1193,7 +1193,7 @@ void codegen(node * root)
         case NODE_PRINT:    //print
             codegen(root->ptr1);
             out_linecount+=2;
-            fprintf(fp, "PORT P0, R%d\nOUT\n", C_REG_BASE + regcount-1);
+            fprintf(fp, "PORT P1, R%d\nOUT\n", C_REG_BASE + regcount-1);
             regcount--;
             break;
         case NODE_INLINE:    //INLINE
@@ -1271,7 +1271,6 @@ int main (int argc,char **argv)
     file_getOpFileName(op_name, filename);
     fp=fopen(".temp","w");
     out_linecount++;
-    fprintf(fp,"START\n");
     yyparse();
     fclose(input_fp);
     fclose(fp);
