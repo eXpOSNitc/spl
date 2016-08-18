@@ -113,7 +113,7 @@ void insert_constant(char *name, int value)
 }      
 void add_predefined_constants()
 {
-    char name[15];
+    char name[40];
     int value;
     FILE *c_fp;
     
