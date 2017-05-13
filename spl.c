@@ -188,6 +188,17 @@ void getreg(node *root, char reg[])
         sprintf(reg, "EMA");
 }
 
+void codegen_reverse_val(node* root)
+{
+	if(root == NULL)
+		return;
+	char reg1[5];
+	codegen_reverse_val(root->ptr1);
+	getreg(root, reg1);
+	out_linecount++;
+    fprintf(fp, "POP %s\n", reg1);
+}
+
 void codegen(node * root)
 {
     int n;
@@ -1058,7 +1069,36 @@ void codegen(node * root)
                 }
                 regcount--;
             }            
-            break;   */        
+
+            break;   */  
+       case NODE_MULTIPUSH:
+			if(root->ptr1->nodetype==NODE_REG)
+			{
+				node * temp;
+				temp = root->ptr1;
+				while(temp!= NULL)
+				{
+					getreg(temp, reg1);
+					out_linecount++;
+                    fprintf(fp, "PUSH %s\n", reg1);
+                    temp=temp->ptr1;
+                }
+            }
+            else
+				fprintf(stderr, "Arguments to multipush are incorrect");
+			break;   
+		
+	case NODE_MULTIPOP:
+		if(root->ptr1->nodetype==NODE_REG)
+		{
+			node * temp;
+			temp = root->ptr1;
+			codegen_reverse_val(temp);
+        	    }
+	            else
+			fprintf(stderr, "Arguments to multipush are incorrect");
+		break;  
+			 
         case NODE_LOAD:    //load or Load asynchronous(which is the default load)
             if(root->ptr1->nodetype==NODE_REG)
             {

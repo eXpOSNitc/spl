@@ -10,8 +10,8 @@
 {
     struct tree *n;
 }
-%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT
-%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT
+%token ALIAS DEFINE DO ELSE ENDIF ENDWHILE IF RETURN IRETURN LOAD  STORE THEN WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP
+%type<n> IF RETURN IRETURN LOAD STORE WHILE HALT REG NUM ASSIGNOP ARITHOP1 ARITHOP2 RELOP LOGOP NOTOP ID stmtlist stmt expr ids ifpad whilepad reglist BREAK CONTINUE CHKPT READ READI PRINT STRING INLINE BACKUP RESTORE LOADI  GOTO CALL ENCRYPT PORT MULTIPUSH MULTIPOP
 %left LOGOP
 %left RELOP  
 %left ARITHOP1      // + and -
@@ -197,6 +197,13 @@ stmt:           expr ASSIGNOP expr ';'          {
                                                 label_add(node_getName($1));
                                                 $$=create_nontermNode(NODE_LABEL_DEF,$1,NULL);
                                             }
+                
+                |MULTIPUSH '(' reglist ')' ';'  {
+                			    	$$=create_tree($1, $3, NULL, NULL);
+                			    }
+                |MULTIPOP '(' reglist ')' ';'  {
+                			     	$$=create_tree($1, $3, NULL, NULL);
+                			    }
                 ;
     
                 
@@ -253,6 +260,14 @@ whilepad:       WHILE                       {
                                                 $$=$1;
                                             }
                 ;
+                
+reglist: 	REG ',' reglist	    {
+						$$=create_tree($1, $3, NULL, NULL);
+					    }
+		;
+reglist:	REG 			    {
+						$$=$1;
+					    } 	
 
 ids:            ID                          {                            
                                                 $$=substitute_id($1);

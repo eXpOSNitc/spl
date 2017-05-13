@@ -96,6 +96,16 @@ void create_node(char nodetype, char *name, int value);
                 create_node(NODE_STORE,NULL,-1);
                 return STORE;
             }
+            
+"multipush" {
+		create_node(NODE_MULTIPUSH,NULL,-1);
+		return MULTIPUSH;
+	    }
+	               
+"multipop"  {
+		create_node(NODE_MULTIPOP,NULL,-1);
+		return MULTIPOP;
+	    }
 
 "while"     {
                 create_node(NODE_WHILE,NULL,-1);

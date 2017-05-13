@@ -48,6 +48,8 @@
 #define NODE_CALL       43
 #define NODE_PORT       44
 #define NODE_LABEL_DEF  45
+#define NODE_MULTIPUSH  46
+#define NODE_MULTIPOP   47
 
 struct define
 {
