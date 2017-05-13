@@ -190,12 +190,12 @@ void getreg(node *root, char reg[])
 
 void codegen_reverse_val(node* root)
 {
-	if(root == NULL)
-		return;
-	char reg1[5];
-	codegen_reverse_val(root->ptr1);
-	getreg(root, reg1);
-	out_linecount++;
+    if(root == NULL)
+        return;
+    char reg1[5];
+    codegen_reverse_val(root->ptr1);
+    getreg(root, reg1);
+    out_linecount++;
     fprintf(fp, "POP %s\n", reg1);
 }
 
@@ -1072,33 +1072,33 @@ void codegen(node * root)
 
             break;   */  
        case NODE_MULTIPUSH:
-			if(root->ptr1->nodetype==NODE_REG)
-			{
-				node * temp;
-				temp = root->ptr1;
-				while(temp!= NULL)
-				{
-					getreg(temp, reg1);
-					out_linecount++;
+            if(root->ptr1->nodetype==NODE_REG)
+            {
+                node * temp;
+                temp = root->ptr1;
+                while(temp!= NULL)
+                {
+                    getreg(temp, reg1);
+                    out_linecount++;
                     fprintf(fp, "PUSH %s\n", reg1);
                     temp=temp->ptr1;
                 }
             }
             else
-				fprintf(stderr, "Arguments to multipush are incorrect");
-			break;   
-		
-	case NODE_MULTIPOP:
-		if(root->ptr1->nodetype==NODE_REG)
-		{
-			node * temp;
-			temp = root->ptr1;
-			codegen_reverse_val(temp);
-        	    }
-	            else
-			fprintf(stderr, "Arguments to multipush are incorrect");
-		break;  
-			 
+                fprintf(stderr, "Arguments to multipush are incorrect");
+            break;   
+
+        case NODE_MULTIPOP:
+            if(root->ptr1->nodetype==NODE_REG)
+            {
+                node * temp;
+                temp = root->ptr1;
+                codegen_reverse_val(temp);
+            }
+            else
+                fprintf(stderr, "Arguments to multipush are incorrect");
+            break;  
+ 
         case NODE_LOAD:    //load or Load asynchronous(which is the default load)
             if(root->ptr1->nodetype==NODE_REG)
             {
@@ -1309,11 +1309,15 @@ int main (int argc,char **argv)
     }
     yyin = input_fp;
     file_getOpFileName(op_name, filename);
+    
+    //First we write the output to a temp file
     fp=fopen(".temp","w");
     out_linecount++;
     yyparse();
     fclose(input_fp);
     fclose(fp);
+    
+    //Compile was success now we actually open the result file and write
     input_fp = fopen(".temp","r");
     if(!input_fp)
     {
@@ -1331,5 +1335,6 @@ int main (int argc,char **argv)
         fputc(ch, fp);
     fclose(input_fp);
     fclose(fp);    
+    
     return 0;
 }

@@ -109,7 +109,7 @@ stmt:           expr ASSIGNOP expr ';'          {
                 |LOADI '(' expr ',' expr ')' ';'        {
                                                             $$=create_tree($1,$3,$5,NULL);
                                                         }
-                |RETURN ';'                            {
+                |RETURN ';'                             {
                                                             $$=$1;
                                                         }
                 |IRETURN ';'                            {
@@ -199,11 +199,11 @@ stmt:           expr ASSIGNOP expr ';'          {
                                             }
                 
                 |MULTIPUSH '(' reglist ')' ';'  {
-                			    	$$=create_tree($1, $3, NULL, NULL);
-                			    }
-                |MULTIPOP '(' reglist ')' ';'  {
-                			     	$$=create_tree($1, $3, NULL, NULL);
-                			    }
+                                                    $$=create_tree($1, $3, NULL, NULL);
+                                                }
+                |MULTIPOP '(' reglist ')' ';'   {
+                                                    $$=create_tree($1, $3, NULL, NULL);
+                                                }
                 ;
     
                 
@@ -261,13 +261,13 @@ whilepad:       WHILE                       {
                                             }
                 ;
                 
-reglist: 	REG ',' reglist	    {
-						$$=create_tree($1, $3, NULL, NULL);
-					    }
-		;
-reglist:	REG 			    {
-						$$=$1;
-					    } 	
+reglist:        REG ',' reglist             {
+                                                $$=create_tree($1, $3, NULL, NULL);
+                                            }
+                |REG                        {
+                                                $$=$1;
+                                            }
+                ;
 
 ids:            ID                          {                            
                                                 $$=substitute_id($1);

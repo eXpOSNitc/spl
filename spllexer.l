@@ -98,14 +98,14 @@ void create_node(char nodetype, char *name, int value);
             }
             
 "multipush" {
-		create_node(NODE_MULTIPUSH,NULL,-1);
-		return MULTIPUSH;
-	    }
-	               
+                create_node(NODE_MULTIPUSH,NULL,-1);
+                return MULTIPUSH;
+            }
+       
 "multipop"  {
-		create_node(NODE_MULTIPOP,NULL,-1);
-		return MULTIPOP;
-	    }
+                create_node(NODE_MULTIPOP,NULL,-1);
+                return MULTIPOP;
+            }
 
 "while"     {
                 create_node(NODE_WHILE,NULL,-1);
