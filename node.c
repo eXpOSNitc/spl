@@ -9,7 +9,6 @@ node* create_termNode(char nodetype, char *name, int value)
     if(name!=NULL)
         tnode->name=strdup(name);
     tnode->value=value;
-    tnode->entry=NULL;
     tnode->ptr1=NULL;
     tnode->ptr2=NULL;
     tnode->ptr3=NULL;
@@ -21,7 +20,6 @@ node* create_nontermNode(char type, node *a, node *b)
     node *temp=malloc(sizeof(node));
     temp->nodetype=type;
     temp->name=NULL;
-    temp->entry=NULL;
     temp->ptr1=a;
     temp->ptr2=b;
     temp->ptr3=NULL;

@@ -49,5 +49,7 @@
 
 #define C_REG_BASE	    16 //Base address of registers reserved for compiler only use(16 because they start from R16)
 
+#define REG_NAME_MAX_LEN 5 //including null char
+
 int isAllowedRegister(int value);
 #endif

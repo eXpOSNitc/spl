@@ -51,20 +51,12 @@
 #define NODE_MULTIPUSH  46
 #define NODE_MULTIPOP   47
 
-struct define
-{
-    char name[30];
-    int value;
-    struct define *next;
-};
-
 typedef struct tree
 {
     char nodetype;        
                    
     char *name;
     int value;
-    struct define *entry;
     struct tree *ptr1,*ptr2,*ptr3;
 }node;
 

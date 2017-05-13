@@ -6,6 +6,7 @@
 #define PAGE_PER_INTERRUPT      2
 #define PAGE_SIZE               512
 
+#define CONSTANT_NAME_MAX_LEN    30
 
 extern int linecount;
 extern unsigned long temp_pos; //temporary lseek
@@ -16,16 +17,21 @@ extern int regcount;
 
 extern FILE *fp;
                         ///start constants and aliasing
+struct define
+{
+    char name[CONSTANT_NAME_MAX_LEN];
+    int value;
+    struct define *next;
+};
 
 extern struct define *root_define;
-extern char alias_table[8][30];
 struct define* lookup_constant(char *name);
 extern int depth;
 
 struct alias
 {
-    char name[30];
-    int no, depth;
+    char name[CONSTANT_NAME_MAX_LEN];
+    int reg, depth;
     struct alias *next;
 };
 extern struct alias *root_alias;
@@ -47,4 +53,3 @@ void codegen(node * root);
 void expandpath(char *path); // To expand environment variables in path
 
 void remfilename(char *pathname);
-node * get_namedLabel_node(node* node);

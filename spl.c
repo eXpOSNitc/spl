@@ -3,6 +3,7 @@
 #include "spl.h"
 #include "label.h"
 #include "y.tab.h"
+#include "file.h"
 
 extern FILE *yyin;
 
@@ -15,7 +16,7 @@ FILE *fp;
                         ///start constants and aliasing
 
 struct define *root_define=NULL;
-char alias_table[8][30];
+
 int depth=0;
 
 struct alias *root_alias=NULL;
@@ -31,6 +32,7 @@ struct define* lookup_constant(char *name)
     }
     return NULL;
 }
+
 struct alias * lookup_alias(char *name)
 {
     struct alias *temp=root_alias;
@@ -42,18 +44,20 @@ struct alias * lookup_alias(char *name)
     }
     return(NULL);
 }
-struct alias * lookup_alias_reg(int no)
+
+struct alias * lookup_alias_reg(int reg)
 {
     struct alias *temp=root_alias;
     while(temp!=NULL)
     {
-        if(no==temp->no)
+        if(reg==temp->reg)
             return(temp);
         temp=temp->next;
     }
     return(NULL);
 }
-void push_alias(char *name, int no)
+
+void push_alias(char *name, int reg)
 {
     struct alias *temp;        
     if(lookup_constant(name)!=NULL)
@@ -68,20 +72,22 @@ void push_alias(char *name, int no)
         exit(0);
     }
     else
-    {    temp=lookup_alias_reg(no);
+    {    
+        temp=lookup_alias_reg(reg);
         if(temp!=NULL && temp->depth==depth)
             strcpy(temp->name, name);
         else
         {
             temp=malloc(sizeof(struct alias));
             strcpy(temp->name, name);
-            temp->no=no;
+            temp->reg=reg;
             temp->depth=depth;
             temp->next=root_alias;
             root_alias=temp;
         }        
     }
 }
+
 void pop_alias()
 {
     struct alias *temp;
@@ -93,6 +99,7 @@ void pop_alias()
         temp=root_alias;
     }
 }
+
 void insert_constant(char *name, int value)
 {
     struct define * temp;
@@ -107,13 +114,14 @@ void insert_constant(char *name, int value)
     }
     else
     {
-        printf("\n%d: Multiple Definition for Contant %s \n", linecount, name);
+        printf("\n%d: Multiple Definitions for Constant %s \n", linecount, name);
         exit(0);
     }
-}      
+}
+      
 void add_predefined_constants()
 {
-    char name[40];
+    char name[CONSTANT_NAME_MAX_LEN];
     int value;
     FILE *c_fp;
     
@@ -125,11 +133,10 @@ void add_predefined_constants()
     }
     while (!feof(c_fp))
     {
-        bzero(name,15);
-        if (fscanf(c_fp ,"%s %d",name,&value)==2)
+        bzero(name,CONSTANT_NAME_MAX_LEN);//this required??
+        if (fscanf(c_fp ,"%s %d",name,&value)==2)//can cause buffer overflow, use names with len<CONSTANT_NAME_MAX_LEN
         {
-            if(lookup_constant(name)==NULL)
-                insert_constant(name, value);
+            insert_constant(name, value);
         }
         else
             break;
@@ -158,7 +165,7 @@ node * substitute_id(node *id)
     }
     id->nodetype=NODE_REG;
     id->name=NULL;
-    id->value=temp2->no;
+    id->value=temp2->reg;
     return(id);
 }
                             ///end of constants and alias
@@ -187,25 +194,16 @@ void getreg(node *root, char reg[])
     else if(root->value == EMA_REG)
         sprintf(reg, "EMA");
 }
-
-void codegen_reverse_val(node* root)
-{
-    if(root == NULL)
-        return;
-    char reg1[5];
-    codegen_reverse_val(root->ptr1);
-    getreg(root, reg1);
-    out_linecount++;
-    fprintf(fp, "POP %s\n", reg1);
-}
-
+   
 void codegen(node * root)
 {
-    int n;
-    char reg1[5], reg2[5];
-    label *l1,*l2;
+    char reg1[REG_NAME_MAX_LEN], reg2[REG_NAME_MAX_LEN];
+    label *l1, *l2;
+    node *temp, *temp2, *temp3;
+    
     if(root==NULL)
         return;    
+        
     switch(root->nodetype)
     {
         case NODE_LT:
@@ -1072,31 +1070,38 @@ void codegen(node * root)
 
             break;   */  
        case NODE_MULTIPUSH:
-            if(root->ptr1->nodetype==NODE_REG)
+            temp = root->ptr1;
+            while(temp!= NULL)
             {
-                node * temp;
-                temp = root->ptr1;
-                while(temp!= NULL)
-                {
-                    getreg(temp, reg1);
-                    out_linecount++;
-                    fprintf(fp, "PUSH %s\n", reg1);
-                    temp=temp->ptr1;
-                }
+                getreg(temp, reg1);
+                out_linecount++;
+                fprintf(fp, "PUSH %s\n", reg1);
+                temp=temp->ptr1;
             }
-            else
-                fprintf(stderr, "Arguments to multipush are incorrect");
             break;   
 
         case NODE_MULTIPOP:
-            if(root->ptr1->nodetype==NODE_REG)
+            temp = root->ptr1;
+            
+            //reverse the list
+            temp2 = temp->ptr1;
+            temp->ptr1=NULL;//will be the last node in the revesed list
+            while(temp2!=NULL)
             {
-                node * temp;
-                temp = root->ptr1;
-                codegen_reverse_val(temp);
+                temp3=temp2->ptr1;  //nextNode
+                temp2->ptr1=temp;   //currNode->next=prevNode
+                temp=temp2;         //prevNode=currNode
+                temp2=temp3;        //currNode=nextNode
             }
-            else
-                fprintf(stderr, "Arguments to multipush are incorrect");
+            
+            while(temp!= NULL)
+            {
+                getreg(temp, reg1);
+                out_linecount++;
+                fprintf(fp, "POP %s\n", reg1);
+                temp=temp->ptr1;
+            }
+            
             break;  
  
         case NODE_LOAD:    //load or Load asynchronous(which is the default load)
@@ -1128,7 +1133,8 @@ void codegen(node * root)
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
-                    out_linecount++; fprintf(fp, "LOAD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    out_linecount++;
+                    fprintf(fp, "LOAD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1138,7 +1144,8 @@ void codegen(node * root)
                 else
                 {
                     codegen(root->ptr2);
-                    out_linecount++; fprintf(fp, "LOAD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
+                    out_linecount++;
+                    fprintf(fp, "LOAD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
                 regcount--;
@@ -1289,16 +1296,11 @@ void codegen(node * root)
     }
 }
 
-node * get_namedLabel_node(node* node)
-{
-    return NULL;   
-}
-
 int main (int argc,char **argv)
 {    
     FILE *input_fp;
-    char filename[200],ch;
-    char op_name[200];
+    char filename[FILENAME_MAX_LEN],ch;
+    char op_name[FILENAME_MAX_LEN];
     strcpy(filename,argv[1]);
     file_expandPath(filename);
     input_fp = fopen(filename,"r");
