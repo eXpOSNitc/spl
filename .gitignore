@@ -6,3 +6,4 @@ y.tab.h
 *.xsm
 *.temp
 *.o
+spl_progs/
