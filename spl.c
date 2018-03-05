@@ -1159,18 +1159,18 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "STORE %s, %s\n", reg2, reg1);                        
+                    fprintf(fp, "STORE %s, %s\n", reg1, reg2);                        
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "STORE %d, %s\n", root->ptr2->value, reg1 );
+                    fprintf(fp, "STORE %s, %d\n", reg1, root->ptr2->value);
                 }
                 else
                 {
                     codegen(root->ptr2);
                     out_linecount++;
-                    fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
+                    fprintf(fp, "STORE %s, R%d\n", reg1, C_REG_BASE + regcount-1);
                     regcount--;
                 }                    
             }
@@ -1181,18 +1181,18 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "STORE %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
+                    fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1,  reg2);    
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "STORE %d, R%d\n", root->ptr2->value, C_REG_BASE + regcount-1);
+                    fprintf(fp, "STORE R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
                     codegen(root->ptr2);
                     out_linecount++;
-                    fprintf(fp, "STORE R%d, R%d\n", C_REG_BASE + regcount-1, C_REG_BASE + regcount-2);
+                    fprintf(fp, "STORE R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
                 regcount--;
@@ -1276,7 +1276,7 @@ void codegen(node * root)
         case NODE_GOTO:
             if(root->ptr1->nodetype==NODE_NUM)
             {
-                fprintf(fp,"GOTO %d\n",root->ptr1->value);
+                fprintf(fp,"JMP %d\n",root->ptr1->value);
             }
             else
             {
@@ -1286,7 +1286,7 @@ void codegen(node * root)
                 }
                 else
                 {
-                    fprintf(fp,"GOTO %s\n",root->ptr1->name);
+                    fprintf(fp,"JMP %s\n",root->ptr1->name);
                 }
             }
             break;
