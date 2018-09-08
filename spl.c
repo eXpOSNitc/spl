@@ -23,7 +23,7 @@ struct alias *root_alias=NULL;
 
 struct define* lookup_constant(char *name)
 {
-    struct define *temp=root_define;    
+    struct define *temp=root_define;
     while(temp!=NULL)
     {
         if(strcmp(name, temp->name)==0)
@@ -59,7 +59,7 @@ struct alias * lookup_alias_reg(int reg)
 
 void push_alias(char *name, int reg)
 {
-    struct alias *temp;        
+    struct alias *temp;
     if(lookup_constant(name)!=NULL)
     {
         printf("\n%d: Alias name %s already used as symbolic contant!!\n", linecount, name);
@@ -72,7 +72,7 @@ void push_alias(char *name, int reg)
         exit(0);
     }
     else
-    {    
+    {
         temp=lookup_alias_reg(reg);
         if(temp!=NULL && temp->depth==depth)
             strcpy(temp->name, name);
@@ -84,7 +84,7 @@ void push_alias(char *name, int reg)
             temp->depth=depth;
             temp->next=root_alias;
             root_alias=temp;
-        }        
+        }
     }
 }
 
@@ -118,13 +118,13 @@ void insert_constant(char *name, int value)
         exit(0);
     }
 }
-      
+
 void add_predefined_constants()
 {
     char name[CONSTANT_NAME_MAX_LEN];
     int value;
     FILE *c_fp;
-    
+
     c_fp = fopen("splconstants.cfg","r");
     if(!c_fp)
     {
@@ -140,7 +140,7 @@ void add_predefined_constants()
         }
         else
             break;
-    }   
+    }
 
     fclose(c_fp);
 }
@@ -194,16 +194,16 @@ void getreg(node *root, char reg[])
     else if(root->value == EMA_REG)
         sprintf(reg, "EMA");
 }
-   
+
 void codegen(node * root)
 {
     char reg1[REG_NAME_MAX_LEN], reg2[REG_NAME_MAX_LEN];
     label *l1, *l2;
     node *temp, *temp2, *temp3;
-    
+
     if(root==NULL)
-        return;    
-        
+        return;
+
     switch(root->nodetype)
     {
         case NODE_LT:
@@ -214,8 +214,8 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
-                    fprintf(fp, "MOV R%d,  %s\nLT R%d,  %s\n", C_REG_BASE + regcount,  reg1,  C_REG_BASE + regcount,  reg2);
-                    regcount++;    
+                    fprintf(fp, "MOV R%d, %s\nLT R%d, %s\n", C_REG_BASE + regcount,  reg1,  C_REG_BASE + regcount,  reg2);
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -226,17 +226,17 @@ void codegen(node * root)
                 {
                     codegen(root->ptr2);
                     out_linecount++;
-                    fprintf(fp,  "GT R%d,  %s\n",  C_REG_BASE + regcount-1, reg1);
-                }                    
+                    fprintf(fp,  "GT R%d, %s\n",  C_REG_BASE + regcount-1, reg1);
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "LT R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "LT R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -245,7 +245,7 @@ void codegen(node * root)
                     fprintf(fp, "LT R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_GT:
             if(root->ptr1->nodetype==NODE_REG)
@@ -256,7 +256,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nGT R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -268,16 +268,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "LT R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "GT R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "GT R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -286,7 +286,7 @@ void codegen(node * root)
                     fprintf(fp, "GT R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_EQ:        //double equals
             if(root->ptr1->nodetype==NODE_REG)
@@ -297,7 +297,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nEQ R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -309,16 +309,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "EQ R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "EQ R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "EQ R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -327,7 +327,7 @@ void codegen(node * root)
                     fprintf(fp, "EQ R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_LE:        //lessthan or equals
             if(root->ptr1->nodetype==NODE_REG)
@@ -338,7 +338,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nLE R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -350,16 +350,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "GE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "LE R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "LE R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -368,9 +368,9 @@ void codegen(node * root)
                     fprintf(fp, "LE R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
-        case NODE_GE:        //greaterthan or equals    
+        case NODE_GE:        //greaterthan or equals
             if(root->ptr1->nodetype==NODE_REG)
             {
                 getreg(root->ptr1, reg1);
@@ -379,7 +379,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nGE R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -391,16 +391,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "LE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "GE R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "GE R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -409,7 +409,7 @@ void codegen(node * root)
                     fprintf(fp, "GE R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_NE:        //not equal
             if(root->ptr1->nodetype==NODE_REG)
@@ -420,7 +420,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nNE R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -432,16 +432,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "NE R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "NE R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "NE R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -450,7 +450,7 @@ void codegen(node * root)
                     fprintf(fp, "NE R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_AND:    //AND operator
             if(root->ptr1->nodetype==NODE_REG)
@@ -461,7 +461,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nMUL R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -473,16 +473,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -491,7 +491,7 @@ void codegen(node * root)
                     fprintf(fp, "MUL R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_OR:    //OR operator
             if(root->ptr1->nodetype==NODE_REG)
@@ -502,7 +502,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nADD R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -514,16 +514,16 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else
                 {
@@ -532,7 +532,7 @@ void codegen(node * root)
                     fprintf(fp, "ADD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_NOT:    //NOT operator
             out_linecount++;
@@ -556,10 +556,10 @@ void codegen(node * root)
                 fprintf(fp, "SUB R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                 regcount--;
             }
-            break;        
+            break;
         case NODE_STMTLIST:    //statement list
             codegen(root->ptr1);
-            codegen(root->ptr2);            
+            codegen(root->ptr2);
             break;
         case NODE_ADD:
             if(root->ptr1->nodetype==NODE_REG)
@@ -570,7 +570,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nADD R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -581,7 +581,7 @@ void codegen(node * root)
                 {
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nADD R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -593,21 +593,21 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "ADD R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "ADD R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);    
+                    fprintf(fp, "ADD R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
@@ -616,7 +616,7 @@ void codegen(node * root)
                     fprintf(fp, "ADD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_SUB:
             if(root->ptr1->nodetype==NODE_REG)
@@ -627,7 +627,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nSUB R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -637,8 +637,8 @@ void codegen(node * root)
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount+=2;
-                    fprintf(fp, "MOV R%d, %s\nSUB R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);    
-                    regcount++;    
+                    fprintf(fp, "MOV R%d, %s\nSUB R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -659,21 +659,21 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "SUB R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "SUB R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "SUB R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "SUB R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);    
+                    fprintf(fp, "SUB R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
@@ -682,7 +682,7 @@ void codegen(node * root)
                     fprintf(fp, "SUB R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_MUL:
             if(root->ptr1->nodetype==NODE_REG)
@@ -693,7 +693,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nMUL R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -704,7 +704,7 @@ void codegen(node * root)
                 {
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nMUL R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);
-                    regcount++;        
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -716,21 +716,21 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++;
                     fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg1);
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "MUL R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "MUL R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);    
+                    fprintf(fp, "MUL R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
@@ -739,7 +739,7 @@ void codegen(node * root)
                     fprintf(fp, "MUL R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_DIV:
             if(root->ptr1->nodetype==NODE_REG)
@@ -750,7 +750,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nDIV R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -761,7 +761,7 @@ void codegen(node * root)
                 {
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nDIV R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);
-                    regcount++;        
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -782,22 +782,22 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "DIV R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
-                }        
-                            
+                }
+
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "DIV R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "DIV R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "DIV R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);    
+                    fprintf(fp, "DIV R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
@@ -806,7 +806,7 @@ void codegen(node * root)
                     fprintf(fp, "DIV R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_MOD:
             if(root->ptr1->nodetype==NODE_REG)
@@ -817,7 +817,7 @@ void codegen(node * root)
                     getreg(root->ptr2, reg2);
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nMOD R%d, %s\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, reg2);
-                    regcount++;    
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -828,7 +828,7 @@ void codegen(node * root)
                 {
                     out_linecount+=2;
                     fprintf(fp, "MOV R%d, %s\nMOD R%d, %d\n", C_REG_BASE + regcount, reg1, C_REG_BASE + regcount, root->ptr2->value);
-                    regcount++;        
+                    regcount++;
                     if(regcount == C_REG_BASE + 5)
                     {
                         printf("Register Overflow. Please reduce size of your expression.\n");
@@ -849,21 +849,21 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "MOD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "MOD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "MOD R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
                     out_linecount++;
-                    fprintf(fp, "MOD R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);    
+                    fprintf(fp, "MOD R%d, %d\n", C_REG_BASE + regcount-1, root->ptr2->value);
                 }
                 else
                 {
@@ -872,19 +872,19 @@ void codegen(node * root)
                     fprintf(fp, "MOD R%d, R%d\n", C_REG_BASE + regcount-2, C_REG_BASE + regcount-1);
                     regcount--;
                 }
-            }            
+            }
             break;
         case NODE_ASSIGN:        //assignment
             if(root->ptr1->nodetype==NODE_ADDR_EXPR) //[expr/no]=*
             {
-                
+
                 if(root->ptr1->ptr1->nodetype==NODE_NUM)    //[no]=*
                 {
                     if(root->ptr2->nodetype==NODE_REG)        //[no]=reg
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "MOV [%d], %s\n", root->ptr1->ptr1->value, reg2);    
+                        fprintf(fp, "MOV [%d], %s\n", root->ptr1->ptr1->value, reg2);
                     }
                     else if(root->ptr2->nodetype==NODE_NUM)    //[no]=no
                     {
@@ -900,7 +900,7 @@ void codegen(node * root)
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "PORT R%d, %s\nMOV [%d], R%d\n", C_REG_BASE + regcount, reg2, root->ptr1->ptr1->value, C_REG_BASE + regcount);    
+                        fprintf(fp, "PORT R%d, %s\nMOV [%d], R%d\n", C_REG_BASE + regcount, reg2, root->ptr1->ptr1->value, C_REG_BASE + regcount);
                     }
                     else                    //[no]=expr
                     {
@@ -917,7 +917,7 @@ void codegen(node * root)
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "MOV [%s], %s\n", reg1, reg2);    
+                        fprintf(fp, "MOV [%s], %s\n", reg1, reg2);
                     }
                     else if(root->ptr2->nodetype==NODE_NUM)    //[reg]=no
                     {
@@ -933,7 +933,7 @@ void codegen(node * root)
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "PORT R%d, %s\nMOV [%s], R%d\n", C_REG_BASE+ regcount, reg2, reg1, C_REG_BASE+regcount);    
+                        fprintf(fp, "PORT R%d, %s\nMOV [%s], R%d\n", C_REG_BASE+ regcount, reg2, reg1, C_REG_BASE+regcount);
                     }
                     else                    //[reg]=expr
                     {
@@ -950,7 +950,7 @@ void codegen(node * root)
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "MOV [R%d], %s\n", C_REG_BASE + regcount-1, reg2);    
+                        fprintf(fp, "MOV [R%d], %s\n", C_REG_BASE + regcount-1, reg2);
                     }
                     else if(root->ptr2->nodetype==NODE_NUM)    //[expr]=no
                     {
@@ -966,7 +966,7 @@ void codegen(node * root)
                     {
                         getreg(root->ptr2, reg2);
                         out_linecount++;
-                        fprintf(fp, "PORT R%d, %s\nMOV [R%d], R%d\n", C_REG_BASE + regcount, reg2, C_REG_BASE + regcount-1, C_REG_BASE + regcount);    
+                        fprintf(fp, "PORT R%d, %s\nMOV [R%d], R%d\n", C_REG_BASE + regcount, reg2, C_REG_BASE + regcount-1, C_REG_BASE + regcount);
                     }
                     else                    //[expr]=expr
                     {
@@ -979,13 +979,13 @@ void codegen(node * root)
                 }
             }
             else                //reg=*
-            {            
+            {
                 getreg(root->ptr1, reg1);
                 if(root->ptr2->nodetype==NODE_REG)        //reg=reg
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "MOV %s, %s\n", reg1, reg2);    
+                    fprintf(fp, "MOV %s, %s\n", reg1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)    //reg=no
                 {
@@ -1001,7 +1001,7 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "PORT R%d, %s\nMOV %s, R%d\n", C_REG_BASE + regcount, reg2, reg1, C_REG_BASE + regcount);    
+                    fprintf(fp, "PORT R%d, %s\nMOV %s, R%d\n", C_REG_BASE + regcount, reg2, reg1, C_REG_BASE + regcount);
                 }
                 else                    //reg=expr
                 {
@@ -1009,8 +1009,8 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "MOV %s, R%d\n", reg1, C_REG_BASE + regcount-1);
                     regcount--;
-                }            
-            }            
+                }
+            }
             break;
         case NODE_ADDR_EXPR:    //addresing
             codegen(root->ptr1);
@@ -1029,7 +1029,7 @@ void codegen(node * root)
             break;
         case NODE_STRING:    //string
             out_linecount++;
-            fprintf(fp, "MOV R%d,  %s\n", C_REG_BASE + regcount, root->name);
+            fprintf(fp, "MOV R%d, %s\n", C_REG_BASE + regcount, root->name);
             regcount++;
             if(regcount == C_REG_BASE + 5)
             {
@@ -1047,7 +1047,7 @@ void codegen(node * root)
                 fprintf(fp, "JZ %s, %s\n", reg1, label_getName(l1));
             }
             else
-            {                
+            {
                 codegen(root->ptr1);/*if condition*/
                 out_linecount++;
                 fprintf(fp, "JZ R%d, %s\n", C_REG_BASE + regcount-1, label_getName(l1));
@@ -1074,12 +1074,12 @@ void codegen(node * root)
                 fprintf(fp, "JZ %s, %s\n", reg1,label_getName(l2));
             }
             else
-            {                
+            {
                 codegen(root->ptr1);
                 out_linecount++;
                 fprintf(fp, "JZ R%d, %s\n", C_REG_BASE + regcount-1,label_getName(l2));
                 regcount--;
-            }   
+            }
             codegen(root->ptr2);
             out_linecount++;
             fprintf(fp, "JMP %s\n", label_getName(l1));
@@ -1106,7 +1106,7 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "LOADI %s, %s\n", reg1, reg2);                        
+                    fprintf(fp, "LOADI %s, %s\n", reg1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1119,15 +1119,15 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "LOADI %s, R%d\n", reg1, C_REG_BASE + regcount-1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
-                    out_linecount++; fprintf(fp, "LOADI R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    out_linecount++; fprintf(fp, "LOADI R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1141,7 +1141,7 @@ void codegen(node * root)
                     regcount--;
                 }
                 regcount--;
-            }            
+            }
             break;
         /*case 'S':    //Store or store immediate(currently this feature is removed)
             if(root->ptr1->nodetype==NODE_REG)
@@ -1151,7 +1151,7 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "STOREI %s, %s\n", reg2, reg1);                        
+                    fprintf(fp, "STOREI %s, %s\n", reg2, reg1);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1163,15 +1163,15 @@ void codegen(node * root)
                     codegen(root->ptr2);
                     out_linecount++; fprintf(fp, "STOREI R%d, %s\n", C_REG_BASE + regcount-1, reg1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
-                    out_linecount++; fprintf(fp, "STOREI %s, R%d\n", reg2, C_REG_BASE + regcount-1);    
+                    out_linecount++; fprintf(fp, "STOREI %s, R%d\n", reg2, C_REG_BASE + regcount-1);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1186,9 +1186,9 @@ void codegen(node * root)
                     regcount--;
                 }
                 regcount--;
-            }            
+            }
 
-            break;   */  
+            break;   */
        case NODE_MULTIPUSH:
             temp = root->ptr1;
             while(temp!= NULL)
@@ -1198,11 +1198,11 @@ void codegen(node * root)
                 fprintf(fp, "PUSH %s\n", reg1);
                 temp=temp->ptr1;
             }
-            break;   
+            break;
 
         case NODE_MULTIPOP:
             temp = root->ptr1;
-            
+
             //reverse the list
             temp2 = temp->ptr1;
             temp->ptr1=NULL;//will be the last node in the revesed list
@@ -1213,7 +1213,7 @@ void codegen(node * root)
                 temp=temp2;         //prevNode=currNode
                 temp2=temp3;        //currNode=nextNode
             }
-            
+
             while(temp!= NULL)
             {
                 getreg(temp, reg1);
@@ -1221,9 +1221,9 @@ void codegen(node * root)
                 fprintf(fp, "POP %s\n", reg1);
                 temp=temp->ptr1;
             }
-            
-            break;  
- 
+
+            break;
+
         case NODE_LOAD:    //load or Load asynchronous(which is the default load)
             if(root->ptr1->nodetype==NODE_REG)
             {
@@ -1232,7 +1232,7 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "LOAD %s, %s\n", reg1, reg2);                        
+                    fprintf(fp, "LOAD %s, %s\n", reg1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1245,16 +1245,16 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "LOAD %s, R%d\n", reg1, C_REG_BASE + regcount-1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "LOAD R%d, %s\n", C_REG_BASE + regcount-1, reg2);    
+                    fprintf(fp, "LOAD R%d, %s\n", C_REG_BASE + regcount-1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1269,7 +1269,7 @@ void codegen(node * root)
                     regcount--;
                 }
                 regcount--;
-            }            
+            }
             break;
         case NODE_STORE:    //store or Store asnchronous (which is the default store)
             if(root->ptr1->nodetype==NODE_REG)
@@ -1279,7 +1279,7 @@ void codegen(node * root)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "STORE %s, %s\n", reg1, reg2);                        
+                    fprintf(fp, "STORE %s, %s\n", reg1, reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1292,16 +1292,16 @@ void codegen(node * root)
                     out_linecount++;
                     fprintf(fp, "STORE %s, R%d\n", reg1, C_REG_BASE + regcount-1);
                     regcount--;
-                }                    
+                }
             }
             else
             {
-                codegen(root->ptr1);            
+                codegen(root->ptr1);
                 if(root->ptr2->nodetype==NODE_REG)
                 {
                     getreg(root->ptr2, reg2);
                     out_linecount++;
-                    fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1,  reg2);    
+                    fprintf(fp, "STORE R%d, %s\n", C_REG_BASE + regcount-1,  reg2);
                 }
                 else if(root->ptr2->nodetype==NODE_NUM)
                 {
@@ -1316,7 +1316,7 @@ void codegen(node * root)
                     regcount--;
                 }
                 regcount--;
-            }            
+            }
             break;
         case NODE_BACKUP:
             out_linecount++;
@@ -1422,7 +1422,7 @@ void codegen(node * root)
 }
 
 int main (int argc,char **argv)
-{    
+{
     FILE *input_fp;
     char filename[FILENAME_MAX_LEN],ch;
     char op_name[FILENAME_MAX_LEN];
@@ -1436,14 +1436,14 @@ int main (int argc,char **argv)
     }
     yyin = input_fp;
     file_getOpFileName(op_name, filename);
-    
+
     //First we write the output to a temp file
     fp=fopen(".temp","w");
     out_linecount++;
     yyparse();
     fclose(input_fp);
     fclose(fp);
-    
+
     //Compile was success now we actually open the result file and write
     input_fp = fopen(".temp","r");
     if(!input_fp)
@@ -1461,7 +1461,7 @@ int main (int argc,char **argv)
     while( ( ch = fgetc(input_fp) ) != EOF )
         fputc(ch, fp);
     fclose(input_fp);
-    fclose(fp);    
-    
+    fclose(fp);
+
     return 0;
 }
