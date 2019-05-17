@@ -7,4 +7,7 @@ y.tab.h
 *.xsm
 *.temp
 *.o
+*xsm
 spl_progs/
+.DS_Store
+.vscode/
